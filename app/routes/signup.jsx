@@ -38,21 +38,21 @@ export default function Signup() {
             <div className="card-body">
               <fieldset className="fieldset">
                 <label className="fieldset-label">I am a </label>
-                <select defaultValue="Pick a color" className="select">
+                <select defaultValue="Pick a color" className="select w-full">
                   <option disabled={true}>Pick a role</option>
                   <option>Student</option>
                   <option>Parent</option>
                 </select>
                 <label className="fieldset-label">First Name</label>
-                <input type="text" className="input" placeholder="First Name"/>
+                <input type="text" className="input w-full" placeholder="First Name"/>
                 <label className="fieldset-label">Last Name</label>
-                <input type="text" className="input" placeholder="Last Name"/>
+                <input type="text" className="input w-full" placeholder="Last Name"/>
                 <label className="fieldset-label">Email</label>
-                <input type="email" className="input" placeholder="Email"/>
+                <input type="email" className="input w-full" placeholder="Email"/>
                 <label className="fieldset-label">Password</label>
-                <input type="password" className="input" placeholder="Password"/>
+                <input type="password" className="input w-full" placeholder="Password"/>
                 <label className="fieldset-label">Password (Confirm)</label>
-                <input type="password" className="input" placeholder="Password"/>
+                <input type="password" className="input w-full" placeholder="Password"/>
                 <button className="btn btn-neutral mt-4">Signup</button>
               </fieldset>
             </div>
