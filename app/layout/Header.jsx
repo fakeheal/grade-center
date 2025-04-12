@@ -3,7 +3,7 @@ import { NavLink } from 'react-router';
 export default ({ isAuthenticated }) => {
 
   return (
-    <div className="navbar bg-base-100 shadow-sm">
+    <div className="navbar bg-base-100 border-b border-base-300/70">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">Grade Center</a>
       </div>
@@ -17,7 +17,6 @@ export default ({ isAuthenticated }) => {
                 </NavLink>
               </li>
               <li>
-
                 <NavLink to="/" end>
                   Grades
                 </NavLink>
