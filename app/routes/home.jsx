@@ -1,7 +1,7 @@
 export function meta() {
   return [
-    { title: 'Grade Center 1' },
-    { name: 'description', content: 'Welcome to React Router!' },
+    { title: 'Grade Center' },
+    { name: 'description', content: 'A modern web-based school grade book for teachers, students, and parents.' },
   ];
 }
 
