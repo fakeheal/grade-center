@@ -1,3 +1,5 @@
+import { NavLink } from 'react-router';
+
 export default ({ isAuthenticated }) => {
 
   return (
@@ -9,15 +11,45 @@ export default ({ isAuthenticated }) => {
         <ul className="menu menu-horizontal px-1">
           {isAuthenticated ? (
             <>
-              <li><a>Dashboard</a></li>
-              <li><a>Grades</a></li>
-              <li><a>Attendance</a></li>
-              <li><a>Settings</a></li>
+              <li>
+                <NavLink to="/" end>
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+
+                <NavLink to="/" end>
+                  Grades
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/" end>
+                  Attendance
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/" end>
+                  Settings
+                </NavLink>
+              </li>
             </>
           ) : (
             <>
-              <li><a>Login</a></li>
-              <li><a>Sign Up</a></li>
+              <li>
+                <NavLink to="/" end>
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/login" end>
+                  Login
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/signup" end>
+                  Sign Up
+                </NavLink>
+              </li>
             </>
           )}
         </ul>

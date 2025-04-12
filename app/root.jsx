@@ -31,7 +31,7 @@ export function Layout({ children }) {
       <Links/>
     </head>
     <body>
-    <Header isAuthenticated={false}/>
+    <Header isAuthenticated={isAuthenticated}/>
     {children}
     <ScrollRestoration/>
     <Scripts/>
