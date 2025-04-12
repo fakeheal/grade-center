@@ -1,18 +1,17 @@
 import { NavLink } from 'react-router';
 
-export default ({ isAuthenticated = true }) => {
-  console.log(isAuthenticated);
+export default () => {
   return (
     <div className="navbar bg-base-100 border-b border-base-300/70">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">Grade Center</a>
+        <NavLink className="btn btn-ghost text-xl" to="/">Grade Center</NavLink>
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
           {true ? (
             <>
               <li>
-                <NavLink to="/">
+                <NavLink to="/dashboard">
                   Dashboard
                 </NavLink>
               </li>
