@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router';
 
-export default ({ isAuthenticated }) => {
-
+export default ({ isAuthenticated = true }) => {
+  console.log(isAuthenticated);
   return (
     <div className="navbar bg-base-100 border-b border-base-300/70">
       <div className="flex-1">
@@ -9,25 +9,25 @@ export default ({ isAuthenticated }) => {
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
-          {isAuthenticated ? (
+          {true ? (
             <>
               <li>
-                <NavLink to="/" end>
+                <NavLink to="/">
                   Dashboard
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" end>
-                  Grades
+                <NavLink to="/students">
+                  Students
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" end>
-                  Attendance
+                <NavLink to="/school/edit">
+                  School
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" end>
+                <NavLink to="/">
                   Settings
                 </NavLink>
               </li>

@@ -6,4 +6,5 @@ export default [
   route('signup', 'routes/signup.jsx'),
 
   route('school/edit', 'routes/authenticated/school/edit.jsx'),
+  route('students', 'routes/authenticated/students/index.jsx'),
 ];

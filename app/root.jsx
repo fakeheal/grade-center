@@ -20,7 +20,6 @@ export const links = () => [
 
 export function Layout({ children }) {
   // dummy variables for changing the layout of the prototype
-  const isAuthenticated = false;
 
   return (
     <html lang="en" data-theme="lofi">
@@ -31,7 +30,7 @@ export function Layout({ children }) {
       <Links/>
     </head>
     <body>
-    <Header isAuthenticated={isAuthenticated}/>
+    <Header/>
     {children}
     <ScrollRestoration/>
     <Scripts/>
