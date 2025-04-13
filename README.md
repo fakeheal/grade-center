@@ -1,16 +1,17 @@
-# Welcome to React Router!
+# Grade Center
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A modern web-based school grade book for teachers, students, and parents. Effortless grade management,
+real-time performance insights, and secure access for everyone.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 🚀 Everything you need to manage grading of your students in one place
+- 👤 Role-Based Dashboards
+  - Teachers: Manage grades, assignments, and student performance
+  - Students: View grades, assignments, and progress
+  - Parents: Monitor student performance and communicate with teachers
+- 🎖️ Easy Grade Management
+- 📊 Real-Time Performance Insights
 
 ## Getting Started
 
@@ -53,15 +54,6 @@ docker build -t my-app .
 docker run -p 3000:3000 my-app
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
 ### DIY Deployment
 
 If you're familiar with deploying Node applications, the built-in app server is production-ready.
@@ -78,8 +70,8 @@ Make sure to deploy the output of `npm run build`
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. For additional bling, DaisyUI was added as a plugin to Tailwind CSS.
 
 ---
 
-Built with ❤️ using React Router.
+Built with ❤️ using React Router, Spring Boot.
