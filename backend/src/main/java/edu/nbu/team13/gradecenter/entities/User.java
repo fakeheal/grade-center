@@ -1,6 +1,7 @@
 package edu.nbu.team13.gradecenter.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,6 +39,7 @@ public class User {
     @Getter
     @Setter
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @Getter
