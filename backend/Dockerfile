@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy Gradle wrapper and project files
 COPY --chown=gradle:gradle . .
 
+# Install dependencies
+RUN gradle dependencies --no-daemon
+
 # Build the application
-RUN gradle build --no-daemon
+RUN gradle bootJar --no-daemon
 
 # Use an official OpenJDK image for the runtime
 FROM openjdk:21-jdk-slim
