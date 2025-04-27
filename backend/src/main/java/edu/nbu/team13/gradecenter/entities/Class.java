@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Entity
 @Data
-@Table(name = "schools")
-public class School{
+@Table(name = "classes")
+public class Class {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,12 @@ public class School{
 
     @Getter
     @Setter
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "grade", nullable = false)
+    private Long grade;
+
+    @Getter
+    @Setter
+    @Column(name = "school_id", nullable = false)
+    private Long schoolId;
+
 }

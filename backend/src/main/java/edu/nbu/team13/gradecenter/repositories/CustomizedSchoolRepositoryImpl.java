@@ -1,6 +1,7 @@
 package edu.nbu.team13.gradecenter.repositories;
 
 import edu.nbu.team13.gradecenter.entities.School;
+import edu.nbu.team13.gradecenter.repositories.utils.PaginationUtil;
 import edu.nbu.team13.gradecenter.repositories.utils.PredicateBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,34 +21,20 @@ public class CustomizedSchoolRepositoryImpl implements  CustomizedSchoolReposito
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Override
     public Page<School> findByOptionalFilters(String name, String address, Pageable pageable){
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        PaginationUtil<School> pgUtil = new PaginationUtil<>(entityManager, cb, School.class);
 
         Map<String, String> filters = new java.util.HashMap<>();
         if (name != null) filters.put("name", name);
         if (address != null) filters.put("address", address);
 
-        // --- Main Query ---
-        CriteriaQuery<School> cq = cb.createQuery(School.class);
-        Root<School> school = cq.from(School.class);
-
-        List<Predicate> predicates = PredicateBuilder.buildLikePredicates(cb, school, filters);
-        cq.where(predicates.toArray(new Predicate[0]));
-
-        TypedQuery<School> query = entityManager.createQuery(cq);
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
-        List<School> schools = query.getResultList();
+        // --- Main Query --
+        List<School> schools = pgUtil.mainQuery(filters, pageable);
 
         // --- Count Query ---
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<School> countRoot = countQuery.from(School.class);
-
-        List<Predicate> countPredicates = PredicateBuilder.buildLikePredicates(cb, countRoot, filters);
-        countQuery.select(cb.count(countRoot));
-        countQuery.where(countPredicates.toArray(new Predicate[0]));
-
-        Long total = entityManager.createQuery(countQuery).getSingleResult();
+        Long total = pgUtil.countQuery(filters);
 
         return new PageImpl<>(schools, pageable, total);
     }
