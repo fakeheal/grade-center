@@ -46,7 +46,7 @@ public class ClassController {
         Class created = classService.create(classDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
-    @PostMapping("/update")
+    @PutMapping("/{id}")
     public ResponseEntity<Class> update(@PathVariable Long id, @RequestBody ClassDto classDto) {
         Class updated = classService.update(id,classDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);

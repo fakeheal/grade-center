@@ -44,7 +44,7 @@ public class SchoolController {
         School created = schoolService.create(schoolDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
-    @PostMapping("/update")
+    @PutMapping("/{id}")
     public ResponseEntity<School> update(@PathVariable Long id, @RequestBody SchoolDto schoolDto) {
         School updated = schoolService.update(id,schoolDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
