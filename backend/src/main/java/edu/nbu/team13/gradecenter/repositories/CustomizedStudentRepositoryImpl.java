@@ -18,7 +18,7 @@ public class CustomizedStudentRepositoryImpl implements CustomizedStudentReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<Student> findByOptionalFilters(Long grade, Long classId, Long userId, Long schoolId, Pageable pageable) {
+    public Page<Student> findByOptionalFilters(Long grade, Long classId, Long userId, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         PaginationUtil<Student> pgUtil = new PaginationUtil<>(entityManager, cb, Student.class);
 
@@ -26,7 +26,6 @@ public class CustomizedStudentRepositoryImpl implements CustomizedStudentReposit
         if (grade != null) filters.put("grade", grade.toString());
         if (classId != null) filters.put("classId", classId.toString());
         if (userId != null) filters.put("userId", userId.toString());
-        if (schoolId != null) filters.put("schoolId", schoolId.toString());
 
 
 

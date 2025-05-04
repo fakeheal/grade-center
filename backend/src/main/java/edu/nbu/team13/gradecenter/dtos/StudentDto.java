@@ -8,7 +8,6 @@ import lombok.Setter;
 public class StudentDto {
     private Long grade;
     private Long classId;
-    private Long schoolId;
     private Long userId;
 }
 

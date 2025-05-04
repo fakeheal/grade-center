@@ -26,12 +26,11 @@ public class StudentController {
             @RequestParam(required = false) Long grade,
             @RequestParam(required = false) Long classId,
             @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long schoolId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Student> students = studentService.search(grade,classId,userId,schoolId, pageable);
+        Page<Student> students = studentService.search(grade,classId,userId, pageable);
         return ResponseEntity.ok(students);
     }
 

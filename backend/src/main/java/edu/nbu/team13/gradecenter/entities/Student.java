@@ -25,10 +25,6 @@ public class Student {
     @Column(name = "class_id", nullable = false)
     private Long classId;
 
-    @Getter
-    @Setter
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
 
     @Getter
     @Setter
