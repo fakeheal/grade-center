@@ -18,12 +18,11 @@ public class CustomizedStudentRepositoryImpl implements CustomizedStudentReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<Student> findByOptionalFilters(String name, Long grade, Long classId, Long userId, Long schoolId, Pageable pageable) {
+    public Page<Student> findByOptionalFilters(Long grade, Long classId, Long userId, Long schoolId, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         PaginationUtil<Student> pgUtil = new PaginationUtil<>(entityManager, cb, Student.class);
 
         Map<String, String> filters = new java.util.HashMap<>();
-        if (name != null) filters.put("name", name);
         if (grade != null) filters.put("grade", grade.toString());
         if (classId != null) filters.put("classId", classId.toString());
         if (userId != null) filters.put("userId", userId.toString());

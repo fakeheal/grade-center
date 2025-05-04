@@ -14,10 +14,6 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
-    @Setter
-    @Column(name = "name", nullable = false)
-    private String name;
 
     @Getter
     @Setter

@@ -21,7 +21,6 @@ public class StudentService {
     public Student create(StudentDto schoolDto) {
         // Convert SchoolDto to School entity
         Student student = new Student();
-        student.setName(schoolDto.getName());
         student.setGrade(schoolDto.getGrade());
         student.setSchoolId(schoolDto.getSchoolId());
         student.setUserId(schoolDto.getUserId());
@@ -36,7 +35,6 @@ public class StudentService {
                 .orElseThrow(() -> new RuntimeException("School not found"));
 
         // Update the school's properties
-        existingStudent.setName(schoolDto.getName());
         existingStudent.setGrade(schoolDto.getGrade());
         existingStudent.setSchoolId(schoolDto.getSchoolId());
         existingStudent.setUserId(schoolDto.getUserId());
@@ -58,7 +56,7 @@ public class StudentService {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("School not found"));
     }
-    public Page<Student> search(String name,Long grade,Long classId,Long userId,Long schoolId, Pageable pageable) {
-        return studentRepository.findByOptionalFilters(name,grade,classId,userId,schoolId, pageable);
+    public Page<Student> search(Long grade,Long classId,Long userId,Long schoolId, Pageable pageable) {
+        return studentRepository.findByOptionalFilters(grade,classId,userId,schoolId, pageable);
     }
 }

@@ -23,7 +23,6 @@ public class StudentController {
     }
     @GetMapping
     public ResponseEntity<Page<Student>> index(
-            @RequestParam(required = false) String name,
             @RequestParam(required = false) Long grade,
             @RequestParam(required = false) Long classId,
             @RequestParam(required = false) Long userId,
@@ -32,7 +31,7 @@ public class StudentController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Student> students = studentService.search(name,grade,classId,userId,schoolId, pageable);
+        Page<Student> students = studentService.search(grade,classId,userId,schoolId, pageable);
         return ResponseEntity.ok(students);
     }
 
