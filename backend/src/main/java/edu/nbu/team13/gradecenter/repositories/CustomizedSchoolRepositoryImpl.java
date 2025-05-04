@@ -1,6 +1,6 @@
 package edu.nbu.team13.gradecenter.repositories;
 
-import edu.nbu.team13.gradecenter.entities.User;
+import edu.nbu.team13.gradecenter.entities.School;
 import edu.nbu.team13.gradecenter.repositories.utils.PaginationUtil;
 import edu.nbu.team13.gradecenter.repositories.utils.PredicateBuilder;
 import jakarta.persistence.EntityManager;
@@ -17,27 +17,25 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Map;
 
-public class CustomizedUserRepositoryImpl implements CustomizedUserRepository {
-
+public class CustomizedSchoolRepositoryImpl implements  CustomizedSchoolRepository{
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public Page<User> findByOptionalFilters(String firstName, String lastName, String email, Pageable pageable) {
+    public Page<School> findByOptionalFilters(String name, String address, Pageable pageable){
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        PaginationUtil<School> pgUtil = new PaginationUtil<>(entityManager, cb, School.class);
 
         Map<String, String> filters = new java.util.HashMap<>();
-        if (firstName != null) filters.put("firstName", firstName);
-        if (lastName != null) filters.put("lastName", lastName);
-        if (email != null) filters.put("email", email);
+        if (name != null) filters.put("name", name);
+        if (address != null) filters.put("address", address);
 
-        // --- Main Query ---
-        PaginationUtil<User> pgUtil = new PaginationUtil<>(entityManager, cb, User.class);
-        List<User> users = pgUtil.mainQuery(filters,pageable);
+        // --- Main Query --
+        List<School> schools = pgUtil.mainQuery(filters, pageable);
 
         // --- Count Query ---
         Long total = pgUtil.countQuery(filters);
 
-        return new PageImpl<>(users, pageable, total);
+        return new PageImpl<>(schools, pageable, total);
     }
 }
