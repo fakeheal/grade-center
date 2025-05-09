@@ -3,7 +3,6 @@ package edu.nbu.team13.gradecenter.services;
 import edu.nbu.team13.gradecenter.dtos.SubjectDto;
 import edu.nbu.team13.gradecenter.entities.Subject;
 import edu.nbu.team13.gradecenter.exceptions.SubjectNotFound;
-import edu.nbu.team13.gradecenter.exceptions.TeacherNotFound;
 import edu.nbu.team13.gradecenter.repositories.SubjectRepository;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +79,6 @@ public class SubjectService {
      */
     public Subject findById(Long id) {
         return subjectRepository.findById(id)
-                .orElseThrow(() -> new TeacherNotFound(id));
+                .orElseThrow(() -> new SubjectNotFound(id));
     }
 }
