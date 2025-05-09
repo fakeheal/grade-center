@@ -43,4 +43,11 @@ public class SubjectController {
         Subject updated = subjectService.update(id, subjectDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        // @TODO: Delete related records - e.g. grades, students, etc.
+        subjectService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
