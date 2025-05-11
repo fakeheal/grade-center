@@ -4,5 +4,6 @@ public enum UserRole {
     STUDENT,
     TEACHER,
     PARENT,
+    DIRECTOR,
     ADMINISTRATOR
 }

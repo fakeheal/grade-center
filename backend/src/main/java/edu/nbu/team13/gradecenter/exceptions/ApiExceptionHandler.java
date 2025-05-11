@@ -25,6 +25,22 @@ public class ApiExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(DirectorAlreadyExists.class)
+    public ResponseEntity<?> handleDirectorExists(DirectorAlreadyExists ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "director_already_exists",
+                "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(StudentNotFound.class)
+    public ResponseEntity<?> handleStudentNotFound(StudentNotFound ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "student_not_found",
+                "message", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneral(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
