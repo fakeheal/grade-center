@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CustomizedTeacherRepository {
-    Page<Teacher> findByOptionalFilters(Long schoolId, Long userId, Pageable pageable);
+    Page<Teacher> findByOptionalFilters(String firstName, String lastName, String email, Long schoolId, Long userId, Pageable pageable);
 }

@@ -1,7 +1,10 @@
 package edu.nbu.team13.gradecenter.services;
 
+import edu.nbu.team13.gradecenter.configurations.ModelMapperConfig;
 import edu.nbu.team13.gradecenter.dtos.TeacherDto;
 import edu.nbu.team13.gradecenter.entities.Teacher;
+import edu.nbu.team13.gradecenter.entities.User;
+import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.TeacherNotFound;
 import edu.nbu.team13.gradecenter.repositories.TeacherRepository;
 import org.springframework.data.domain.Page;
@@ -12,8 +15,14 @@ import org.springframework.stereotype.Service;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
 
-    public TeacherService(TeacherRepository teacherRepository) {
+    private final UserService userService;
+
+    private final ModelMapperConfig modelMapperConfig;
+
+    public TeacherService(TeacherRepository teacherRepository, UserService userService, ModelMapperConfig modelMapperConfig) {
         this.teacherRepository = teacherRepository;
+        this.userService = userService;
+        this.modelMapperConfig = modelMapperConfig;
     }
 
     /**
@@ -22,12 +31,15 @@ public class TeacherService {
      * @param teacherDto the teacher data transfer object
      * @return the created teacher
      */
-    public Teacher create(TeacherDto teacherDto) {
+    public TeacherDto create(TeacherDto teacherDto) {
         Teacher teacher = new Teacher();
-        teacher.setSchoolId(teacher.getSchoolId());
-        teacher.setUserId(teacherDto.getUserId());
 
-        return teacherRepository.save(teacher);
+        User user = userService.create(teacherDto, UserRole.TEACHER);
+        teacher.setUser(user);
+
+        return modelMapperConfig
+                .modelMapper()
+                .map(teacherRepository.save(teacher), TeacherDto.class);
     }
 
     /**
@@ -37,14 +49,15 @@ public class TeacherService {
      * @param teacherDto the teacher data transfer object
      * @return the updated teacher
      */
-    public Teacher update(Long id, TeacherDto teacherDto) {
-        Teacher existingTeacher = teacherRepository.findById(id)
+    public TeacherDto update(Long id, TeacherDto teacherDto) {
+        User user = userService.findById(id);
+        Teacher teacher = teacherRepository.findByUserId(id)
                 .orElseThrow(() -> new TeacherNotFound(id));
 
-        existingTeacher.setSchoolId(teacherDto.getSchoolId());
-        existingTeacher.setUserId(teacherDto.getUserId());
-
-        return teacherRepository.save(existingTeacher);
+        userService.update(user.getId(), teacherDto);
+        return modelMapperConfig
+                .modelMapper()
+                .map(teacherRepository.save(teacher), TeacherDto.class);
     }
 
     /**
@@ -53,32 +66,48 @@ public class TeacherService {
      * @param id the ID of the teacher to delete
      */
     public void delete(Long id) {
-        Teacher existingTeacher = teacherRepository.findById(id)
+        User user = userService.findById(id);
+        Teacher teacher = teacherRepository.findByUserId(id)
                 .orElseThrow(() -> new TeacherNotFound(id));
 
-        teacherRepository.delete(existingTeacher);
+        userService.delete(user.getId());
+        teacherRepository.delete(teacher);
     }
 
     /**
-     * Finds a teacher by ID.
+     * Finds a teacher by User ID.
      *
-     * @param id the ID of the teacher to find
+     * @param id the User ID of the teacher to find
      * @return the found teacher
      */
-    public Teacher findById(Long id) {
-        return teacherRepository.findById(id)
-                .orElseThrow(() -> new TeacherNotFound(id));
+    public TeacherDto findByUserId(Long id) {
+        return modelMapperConfig
+                .modelMapper()
+                .map(
+                        teacherRepository.findByUserId(id)
+                                .orElseThrow(() -> new TeacherNotFound(id)), TeacherDto.class
+                );
     }
 
     /**
-     * Finds all teachers with optional filters.
+     * Finds teachers by optional filters - first name, last name, email, school ID, and user ID.
      *
-     * @param schoolId id of the school to filter by (optional)
-     * @param userId   id of the user to filter by (optional)
-     * @param pageable pagination information
-     * @return a page of teachers
+     * @param firstName search filter for first name
+     * @param lastName  search filter for last name
+     * @param email     search filter for email
+     * @param schoolId  search filter for school ID
+     * @param userId    search filter for user ID
+     * @param pageable  pagination information
+     * @return a page of teachers matching the filters
      */
-    public Page<Teacher> search(Long schoolId, Long userId, Pageable pageable) {
-        return teacherRepository.findByOptionalFilters(schoolId, userId, pageable);
+    public Page<Teacher> search(String firstName, String lastName, String email, Long schoolId, Long userId, Pageable pageable) {
+        return teacherRepository.findByOptionalFilters(
+                firstName,
+                lastName,
+                email,
+                schoolId,
+                userId,
+                pageable
+        );
     }
 }

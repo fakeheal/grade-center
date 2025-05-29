@@ -17,12 +17,13 @@ public class CustomizedTeacherRepositoryImpl implements CustomizedTeacherReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<Teacher> findByOptionalFilters(Long schoolId, Long userId, Pageable pageable) {
+    public Page<Teacher> findByOptionalFilters(String firstName, String lastName, String email, Long schoolId, Long userId, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         PaginationUtil<Teacher> pgUtil = new PaginationUtil<>(entityManager, cb, Teacher.class);
 
         Map<String, String> filters = new java.util.HashMap<>();
-        if (schoolId != null) filters.put("schoolId", schoolId.toString());
+        //@TODO: Search by firstName, lastName, email, schoolId inside USER
+//        if (schoolId != null) filters.put("schoolId", schoolId.toString());
         if (userId != null) filters.put("userId", userId.toString());
 
         // --- Main Query --

@@ -21,31 +21,41 @@ public class TeacherController {
 
     @GetMapping
     public ResponseEntity<Page<Teacher>> index(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
             @RequestParam(required = false) Long schoolId,
             @RequestParam(required = false) Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Teacher> teachers = teacherService.search(schoolId, userId, pageable);
+        Page<Teacher> teachers = teacherService.search(
+                firstName,
+                lastName,
+                email,
+                schoolId,
+                userId,
+                pageable
+        );
         return ResponseEntity.ok(teachers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Teacher> show(@PathVariable Long id) {
-        Teacher teacher = teacherService.findById(id);
+    public ResponseEntity<TeacherDto> show(@PathVariable Long id) {
+        TeacherDto teacher = teacherService.findByUserId(id);
         return ResponseEntity.ok(teacher);
     }
 
     @PostMapping
-    public ResponseEntity<Teacher> create(@RequestBody TeacherDto teacherDto) {
-        Teacher created = teacherService.create(teacherDto);
+    public ResponseEntity<TeacherDto> create(@RequestBody TeacherDto teacherDto) {
+        TeacherDto created = teacherService.create(teacherDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Teacher> update(@PathVariable Long id, @RequestBody TeacherDto teacherDto) {
-        Teacher updated = teacherService.update(id, teacherDto);
+    public ResponseEntity<TeacherDto> update(@PathVariable Long id, @RequestBody TeacherDto teacherDto) {
+        TeacherDto updated = teacherService.update(id, teacherDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }
