@@ -1,6 +1,8 @@
 package edu.nbu.team13.gradecenter.services;
 
+import edu.nbu.team13.gradecenter.dtos.SchoolDto;
 import edu.nbu.team13.gradecenter.dtos.TeacherDto;
+import edu.nbu.team13.gradecenter.entities.School;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.exceptions.EmailNotAvailable;
 import edu.nbu.team13.gradecenter.exceptions.UserNotFound;
@@ -31,10 +33,19 @@ public class TeacherServiceTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SchoolService schoolService;
+
+    private School school;
     @BeforeEach
     void setUp() {
         teacherRepository.deleteAll();
         userRepository.deleteAll();
+
+        SchoolDto schoolDto = new SchoolDto();
+        schoolDto.setName("Test School");
+        schoolDto.setAddress("Test Address");
+        school = schoolService.create(schoolDto);
     }
 
     @Test
@@ -45,7 +56,7 @@ public class TeacherServiceTest {
         String password = "password";
 
         TeacherDto teacherDto = new TeacherDto();
-        teacherDto.setSchoolId(1L);
+        teacherDto.setSchoolId(school.getId());
         teacherDto.setFirstName(firstName);
         teacherDto.setLastName(lastName);
         teacherDto.setEmail(email);
@@ -67,7 +78,7 @@ public class TeacherServiceTest {
         String password = "password";
 
         TeacherDto teacherDto = new TeacherDto();
-        teacherDto.setSchoolId(1L);
+        teacherDto.setSchoolId(school.getId());
         teacherDto.setFirstName(firstName);
         teacherDto.setLastName(lastName);
         teacherDto.setEmail(email);
@@ -100,7 +111,7 @@ public class TeacherServiceTest {
         String updatedLastName = "Smith";
 
         TeacherDto updatedTeacherDto = new TeacherDto();
-        updatedTeacherDto.setSchoolId(1L);
+        updatedTeacherDto.setSchoolId(school.getId());
         updatedTeacherDto.setFirstName(updatedFirstName);
         updatedTeacherDto.setLastName(updatedLastName);
         updatedTeacherDto.setEmail(email);
@@ -120,7 +131,7 @@ public class TeacherServiceTest {
         String password = "password";
 
         TeacherDto teacherDto = new TeacherDto();
-        teacherDto.setSchoolId(1L);
+        teacherDto.setSchoolId(school.getId());
         teacherDto.setFirstName(firstName);
         teacherDto.setLastName(lastName);
         teacherDto.setEmail(email);
@@ -145,7 +156,7 @@ public class TeacherServiceTest {
         String password = "password";
 
         TeacherDto teacherDto = new TeacherDto();
-        teacherDto.setSchoolId(1L);
+        teacherDto.setSchoolId(school.getId());
         teacherDto.setFirstName(firstName);
         teacherDto.setLastName(lastName);
         teacherDto.setEmail(email);
@@ -170,7 +181,7 @@ public class TeacherServiceTest {
         String password = "password";
 
         TeacherDto teacherDto = new TeacherDto();
-        teacherDto.setSchoolId(1L);
+        teacherDto.setSchoolId(school.getId());
         teacherDto.setFirstName(firstName);
         teacherDto.setLastName(lastName);
         teacherDto.setEmail(email);

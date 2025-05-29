@@ -70,8 +70,8 @@ public class TeacherService {
         Teacher teacher = teacherRepository.findByUserId(id)
                 .orElseThrow(() -> new TeacherNotFound(id));
 
-        userService.delete(user.getId());
         teacherRepository.delete(teacher);
+        userService.delete(user.getId());
     }
 
     /**
