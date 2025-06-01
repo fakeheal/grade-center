@@ -18,41 +18,41 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Student create(StudentDto schoolDto) {
-        // Convert SchoolDto to School entity
+    public Student create(StudentDto studentDto) {
+        // Convert StudentDto to Student entity
         Student student = new Student();
-        student.setGrade(schoolDto.getGrade());
-        student.setUserId(schoolDto.getUserId());
-        student.setClassId(schoolDto.getClassId());
+        student.setGrade(studentDto.getGrade());
+        student.setUserId(studentDto.getUserId());
+        student.setClassId(studentDto.getClassId());
 
-        // Save the school entity to the database
+        // Save the student entity to the database
         return studentRepository.save(student);
     }
-    public Student update(Long id, StudentDto schoolDto) {
-        // Find the existing school by ID
+    public Student update(Long id, StudentDto studentDto) {
+        // Find the existing student by ID
         Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("School not found"));
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // Update the school's properties
-        existingStudent.setGrade(schoolDto.getGrade());
-        existingStudent.setUserId(schoolDto.getUserId());
-        existingStudent.setClassId(schoolDto.getClassId());
+        // Update the student's properties
+        existingStudent.setGrade(studentDto.getGrade());
+        existingStudent.setUserId(studentDto.getUserId());
+        existingStudent.setClassId(studentDto.getClassId());
 
-        // Save the updated school entity to the database
+        // Save the updated student entity to the database
         return studentRepository.save(existingStudent);
     }
     public void delete(Long id) {
-        // Find the existing school by ID
-        Student existingSchool = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("School not found"));
+        // Find the existing student by ID
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // Delete the school entity from the database
-        studentRepository.delete(existingSchool);
+        // Delete the student entity from the database
+        studentRepository.delete(existingStudent);
     }
     public Student findById(Long id) {
-        // Find the existing school by ID
+        // Find the existing student by ID
         return studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("School not found"));
+                .orElseThrow(() -> new RuntimeException("Student not found"));
     }
     public Page<Student> search(Long grade,Long classId,Long userId, Pageable pageable) {
         return studentRepository.findByOptionalFilters(grade,classId,userId, pageable);

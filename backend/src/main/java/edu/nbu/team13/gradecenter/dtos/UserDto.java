@@ -1,5 +1,7 @@
 package edu.nbu.team13.gradecenter.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,16 +12,12 @@ public class UserDto {
     private String email;
     private String firstName;
     private String lastName;
+    private Long schoolId;
+
+    @Nullable
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     public UserDto() {
-    }
-
-    public UserDto(Long id, String email, String firstName, String lastName, String password) {
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
     }
 }

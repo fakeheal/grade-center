@@ -14,8 +14,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final SchoolService schoolService;
+
+    public UserService(UserRepository userRepository, SchoolService schoolService) {
         this.userRepository = userRepository;
+        this.schoolService = schoolService;
     }
 
     /**
@@ -45,7 +48,7 @@ public class UserService {
      * @param userDto User data transfer object
      * @return User object
      */
-    public User create(UserDto userDto) {
+    public User create(UserDto userDto, UserRole role) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new EmailNotAvailable(userDto.getEmail());
         }
@@ -55,8 +58,8 @@ public class UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
 
-        user.setSchoolId(1L); //@TODO: Replace with actual school ID logic
-        user.setRole(UserRole.STUDENT); //@TODO: Replace with actual role logic
+        user.setSchool(this.schoolService.findById(userDto.getSchoolId()));
+        user.setRole(role);
 
         // @TODO: Hash the password before saving, e.g., using BCrypt
         user.setPassword(userDto.getPassword());
@@ -82,6 +85,13 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
+        user.setSchool(this.schoolService.findById(userDto.getSchoolId()));
+
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            // @TODO: Hash the password before saving, e.g., using BCrypt
+            user.setPassword(userDto.getPassword());
+        }
+
         return userRepository.save(user);
     }
 

@@ -31,7 +31,7 @@ public class Grade {
 
     @Getter
     @Setter
-    @Column(name = "value", nullable = false)
+    @Column(name = "`value`", nullable = false)
     private Double value;
 
     @Getter
