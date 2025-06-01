@@ -19,6 +19,7 @@ public class Subject {
     private String name;
 
     @Setter
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    @Getter
+    @ManyToOne
+    private School school;
 }

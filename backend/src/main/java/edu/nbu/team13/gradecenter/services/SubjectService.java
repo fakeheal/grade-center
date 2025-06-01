@@ -1,6 +1,7 @@
 package edu.nbu.team13.gradecenter.services;
 
 import edu.nbu.team13.gradecenter.dtos.SubjectDto;
+import edu.nbu.team13.gradecenter.entities.School;
 import edu.nbu.team13.gradecenter.entities.Subject;
 import edu.nbu.team13.gradecenter.exceptions.SubjectNotFound;
 import edu.nbu.team13.gradecenter.repositories.SubjectRepository;
@@ -12,8 +13,11 @@ import java.util.List;
 public class SubjectService {
     private final SubjectRepository subjectRepository;
 
-    public SubjectService(SubjectRepository subjectRepository) {
+    private final SchoolService schoolService;
+
+    public SubjectService(SubjectRepository subjectRepository, SchoolService schoolService){
         this.subjectRepository = subjectRepository;
+        this.schoolService = schoolService;
     }
 
     /**
@@ -36,7 +40,7 @@ public class SubjectService {
     public Subject create(SubjectDto subjectDto) {
         Subject subject = new Subject();
 
-        subject.setSchoolId(subjectDto.getSchoolId());
+        subject.setSchool(this.schoolService.findById(subjectDto.getSchoolId()));
         subject.setName(subjectDto.getName());
 
         return subjectRepository.save(subject);
@@ -53,7 +57,7 @@ public class SubjectService {
         Subject existingSubject = subjectRepository.findById(id)
                 .orElseThrow(() -> new SubjectNotFound(id));
 
-        existingSubject.setSchoolId(subjectDto.getSchoolId());
+        existingSubject.setSchool(this.schoolService.findById(subjectDto.getSchoolId()));
         existingSubject.setName(subjectDto.getName());
 
         return subjectRepository.save(existingSubject);
