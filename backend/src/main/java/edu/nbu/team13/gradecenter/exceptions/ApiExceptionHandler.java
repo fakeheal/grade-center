@@ -25,6 +25,46 @@ public class ApiExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(DirectorAlreadyExists.class)
+    public ResponseEntity<?> handleDirectorExists(DirectorAlreadyExists ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "director_already_exists",
+                "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(StudentNotFound.class)
+    public ResponseEntity<?> handleStudentNotFound(StudentNotFound ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "student_not_found",
+                "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(SchoolYearAlreadyExists.class)
+    public ResponseEntity<?> handleYearExists(SchoolYearAlreadyExists ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "school_year_exists",
+                "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(SchoolYearNotFound.class)
+    public ResponseEntity<?> handleYearNF(SchoolYearNotFound ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "school_year_not_found",
+                "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidInput.class)
+    public ResponseEntity<?> handleBad(InvalidInput ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "error", "invalid_input",
+                "message", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneral(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
