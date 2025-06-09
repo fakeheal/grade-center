@@ -74,4 +74,10 @@ public class DirectorService {
         u.setPassword(d.getPassword());
         return u;
     }
+
+    public User findById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Director not found"));
+    }
+
 }
