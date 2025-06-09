@@ -1,7 +1,5 @@
 package edu.nbu.team13.gradecenter.repositories.utils;
 
-import edu.nbu.team13.gradecenter.entities.School;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -28,7 +26,7 @@ public class PaginationUtil<T> {
         CriteriaQuery<T> cq = cb.createQuery(entityClass);
         Root<T> school = cq.from(entityClass);
 
-        List<Predicate> predicates = PredicateBuilder.buildLikePredicates(cb, school, filters);
+        List<Predicate> predicates = PredicateBuilder.buildWherePredicates(cb, school, filters);
         cq.where(predicates.toArray(new Predicate[0]));
 
         TypedQuery<T> query = entityManager.createQuery(cq);
@@ -41,7 +39,7 @@ public class PaginationUtil<T> {
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<T> countRoot = countQuery.from(entityClass);
 
-        List<Predicate> countPredicates = PredicateBuilder.buildLikePredicates(cb, countRoot, filters);
+        List<Predicate> countPredicates = PredicateBuilder.buildWherePredicates(cb, countRoot, filters);
         countQuery.select(cb.count(countRoot));
         countQuery.where(countPredicates.toArray(new Predicate[0]));
 
