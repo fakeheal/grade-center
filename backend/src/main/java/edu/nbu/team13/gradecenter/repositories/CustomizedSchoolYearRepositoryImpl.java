@@ -1,6 +1,8 @@
 package edu.nbu.team13.gradecenter.repositories;
 
 import edu.nbu.team13.gradecenter.entities.SchoolYear;
+import edu.nbu.team13.gradecenter.entities.User;
+import edu.nbu.team13.gradecenter.repositories.utils.PaginationUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -14,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,26 +33,16 @@ public class CustomizedSchoolYearRepositoryImpl
                                           Long schoolId, Pageable pg) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<SchoolYear> cq = cb.createQuery(SchoolYear.class);
-        Root<SchoolYear> root = cq.from(SchoolYear.class);
+        PaginationUtil<SchoolYear> pgUtil = new PaginationUtil<>(em, cb, SchoolYear.class);
 
-        List<Predicate> predicates = new ArrayList<>();
-        if (year     != null) predicates.add(cb.equal(root.get("year"), year));
-        if (term     != null) predicates.add(cb.equal(root.get("term"), term));
-        if (schoolId != null) predicates.add(cb.equal(root.get("schoolId"), schoolId));
+        Map<String, String> filters = new HashMap<>();
+        if (year     != null) filters.put("year", year.toString());
+        if (term     != null) filters.put("term", term.toString());
+        if (schoolId != null) filters.put("schoolId", schoolId.toString());
 
-        cq.where(predicates.toArray(new Predicate[0]));
+        List<SchoolYear> schoolYears = pgUtil.mainQuery(filters, pg);
+        Long total = pgUtil.countQuery(filters);
 
-        List<SchoolYear> data = em.createQuery(cq)
-                .setFirstResult((int) pg.getOffset())
-                .setMaxResults(pg.getPageSize())
-                .getResultList();
-
-        CriteriaQuery<Long> cnt = cb.createQuery(Long.class);
-        Root<SchoolYear> cRoot = cnt.from(SchoolYear.class);
-        cnt.select(cb.count(cRoot)).where(predicates.toArray(new Predicate[0]));
-        long total = em.createQuery(cnt).getSingleResult();
-
-        return new PageImpl<>(data, pg, total);
+        return new PageImpl<>(schoolYears, pg, total);
     }
 }
