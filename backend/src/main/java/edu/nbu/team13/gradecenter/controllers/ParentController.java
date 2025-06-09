@@ -39,6 +39,11 @@ public class ParentController {
         return ResponseEntity.ok(svc.update(id, dto));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> show(@PathVariable Long id) {
+        return ResponseEntity.ok(svc.findById(id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

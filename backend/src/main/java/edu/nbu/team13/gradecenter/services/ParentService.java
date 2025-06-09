@@ -98,4 +98,9 @@ public class ParentService {
             linkRepo.save(link);
         }
     }
+
+    public User findById(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }
