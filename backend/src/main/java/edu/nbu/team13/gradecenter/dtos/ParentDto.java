@@ -1,11 +1,16 @@
 package edu.nbu.team13.gradecenter.dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ParentDto {
 
     private Long id;
@@ -16,10 +21,7 @@ public class ParentDto {
     private String email;
     private String password;
 
-    @JsonProperty("school_id")           // accept both camelCase & snake_case
     private Long schoolId;
 
-    /* list of student IDs that this user is parent of */
-    @JsonProperty("student_ids")
     private List<Long> studentIds;
 }
