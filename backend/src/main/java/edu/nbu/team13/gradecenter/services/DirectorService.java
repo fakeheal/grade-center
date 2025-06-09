@@ -2,13 +2,12 @@ package edu.nbu.team13.gradecenter.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import edu.nbu.team13.gradecenter.dtos.DirectorDTO;
+import edu.nbu.team13.gradecenter.dtos.DirectorDto;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.*;
 import edu.nbu.team13.gradecenter.repositories.DirectorRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +17,7 @@ public class DirectorService {
     private final DirectorRepository repo;
 
 
-    public User create(DirectorDTO dto) {
+    public User create(DirectorDto dto) {
         if (repo.existsByEmail(dto.getEmail()))
             throw new EmailNotAvailable(dto.getEmail());
 
@@ -39,7 +38,7 @@ public class DirectorService {
     }
 
 
-    public User update(Long id, DirectorDTO dto) {
+    public User update(Long id, DirectorDto dto) {
         User u = repo.findById(id)
                 .orElseThrow(() -> new UserNotFound(id));
 
@@ -64,7 +63,7 @@ public class DirectorService {
         repo.delete(u);
     }
 
-    private User toEntity(DirectorDTO d) {
+    private User toEntity(DirectorDto d) {
         User u = new User();
         u.setFirstName(d.getFirstName());
         u.setLastName(d.getLastName());
