@@ -1,6 +1,6 @@
 package edu.nbu.team13.gradecenter.controllers;
 
-import edu.nbu.team13.gradecenter.dtos.DirectorDTO;
+import edu.nbu.team13.gradecenter.dtos.DirectorDto;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.services.DirectorService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class DirectorController {
     private final DirectorService svc;
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody DirectorDTO dto) {
+    public ResponseEntity<User> create(@RequestBody DirectorDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(svc.create(dto));
     }
@@ -36,7 +36,7 @@ public class DirectorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id,
-                                       @RequestBody DirectorDTO dto) {
+                                       @RequestBody DirectorDto dto) {
         return ResponseEntity.ok(svc.update(id,dto));
     }
 

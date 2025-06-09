@@ -3,7 +3,7 @@ package edu.nbu.team13.gradecenter.dtos;
 import lombok.*;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class DirectorDTO {
+public class DirectorDto {
     private Long id;
     private String firstName;
     private String lastName;
