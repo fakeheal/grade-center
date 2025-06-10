@@ -7,7 +7,6 @@ import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.InvalidUserRole;
 import edu.nbu.team13.gradecenter.repositories.ParentRepository;
 import edu.nbu.team13.gradecenter.repositories.ParentStudentRepository;
-import edu.nbu.team13.gradecenter.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -104,6 +103,10 @@ public class ParentService {
      * @return the User object representing the parent
      */
     public User findById(Long id) {
-        return userService.findById(id);
+        User user = userService.findById(id);
+        if (user.getRole() != UserRole.PARENT) {
+            throw new InvalidUserRole(id, UserRole.PARENT.name());
+        }
+        return user;
     }
 }
