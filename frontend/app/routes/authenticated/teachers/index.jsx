@@ -33,7 +33,7 @@ export default function Index({ loaderData }) {
           <div className="flex justify-between items-center">
 
             <h2 className="card-title">Teachers</h2>
-            <a href="#" className="btn btn-primary btn-sm">Add Teacher</a>
+            <Link to={'/teachers/create'} className="btn btn-primary btn-sm">Add Teacher</Link>
           </div>
           <div className="bg-base-100 text-base-content">
             <div className="overflow-x-auto">
