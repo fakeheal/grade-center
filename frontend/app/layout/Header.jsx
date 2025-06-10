@@ -21,6 +21,11 @@ export default () => {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/teachers">
+                  Teachers
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/school/edit">
                   School
                 </NavLink>
