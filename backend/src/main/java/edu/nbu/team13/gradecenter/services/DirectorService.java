@@ -4,8 +4,7 @@ import edu.nbu.team13.gradecenter.dtos.DirectorDto;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.DirectorAlreadyExists;
-import edu.nbu.team13.gradecenter.exceptions.EmailNotAvailable;
-import edu.nbu.team13.gradecenter.exceptions.UserNotFound;
+import edu.nbu.team13.gradecenter.exceptions.InvalidUserRole;
 import edu.nbu.team13.gradecenter.repositories.DirectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,68 +15,74 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DirectorService {
 
-    private final DirectorRepository repo;
+    private final DirectorRepository directorRepository;
 
+    private final SchoolService schoolService;
+    private final UserService userService;
 
+    /**
+     * Creates a new director.
+     *
+     * @param dto the director data transfer object containing the necessary information.
+     * @return the created User entity representing the director.
+     */
     public User create(DirectorDto dto) {
-        if (repo.existsByEmail(dto.getEmail()))
-            throw new EmailNotAvailable(dto.getEmail());
-
-        if (repo.existsBySchoolId(dto.getSchoolId()))
+        if (schoolService.hasDirector(dto.getSchoolId())) {
             throw new DirectorAlreadyExists(dto.getSchoolId());
-
-        User u = toEntity(dto);
-        u.setRole(UserRole.DIRECTOR);          // mark as director
-        return repo.save(u);
+        }
+        return userService.create(dto, UserRole.DIRECTOR);
     }
 
 
+    /**
+     * Retrieves a paginated list of directors based on the provided filters.
+     *
+     * @param firstName first name filter
+     * @param lastName  last name filter
+     * @param email     email filter
+     * @param pageable  pagination information
+     * @return a Page of User entities representing the directors
+     */
     public Page<User> index(String firstName,
                             String lastName,
                             String email,
                             Pageable pageable) {
-        return repo.findDirectorsByFilters(firstName, lastName, email, pageable);
+        return directorRepository.findDirectorsByFilters(firstName, lastName, email, pageable);
     }
 
 
+    /**
+     * Updates an existing director's information.
+     *
+     * @param id  the ID of the director to update
+     * @param dto the director data transfer object containing the updated information
+     * @return the updated User entity representing the director
+     */
     public User update(Long id, DirectorDto dto) {
-        User u = repo.findById(id)
-                .orElseThrow(() -> new UserNotFound(id));
-
-        u.setFirstName(dto.getFirstName());
-        u.setLastName(dto.getLastName());
-        u.setSchoolId(dto.getSchoolId());
-
-        if (!u.getEmail().equals(dto.getEmail())) {
-            if (repo.existsByEmail(dto.getEmail()))
-                throw new EmailNotAvailable(dto.getEmail());
-            u.setEmail(dto.getEmail());
-        }
-
-
-        return repo.save(u);
+        return userService.update(id, dto);
     }
 
 
+    /**
+     * Deletes a director by their ID.
+     *
+     * @param id the ID of the director to delete
+     */
     public void delete(Long id) {
-        User u = repo.findById(id)
-                .orElseThrow(() -> new UserNotFound(id));
-        repo.delete(u);
+        userService.delete(id);
     }
 
-    private User toEntity(DirectorDto d) {
-        User u = new User();
-        u.setFirstName(d.getFirstName());
-        u.setLastName(d.getLastName());
-        u.setEmail(d.getEmail());
-        u.setSchoolId(d.getSchoolId());
-        u.setPassword(d.getPassword());
-        return u;
-    }
-
+    /**
+     * Finds a director by their ID.
+     *
+     * @param id the ID of the director to find
+     * @return the User entity representing the director, or null if not found
+     */
     public User findById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Director not found"));
+        User user = userService.findById(id);
+        if (user.getRole() != UserRole.DIRECTOR) {
+            throw new InvalidUserRole(id, UserRole.DIRECTOR.name());
+        }
+        return user;
     }
-
 }

@@ -1,13 +1,9 @@
 package edu.nbu.team13.gradecenter.dtos;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class DirectorDto {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
-    private Long schoolId;           // guarantee the link to a school
+@Getter
+@Setter
+public class DirectorDto extends UserDto {
 }
