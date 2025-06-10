@@ -11,17 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParentDto {
-
-    private Long id;
-
-    private String firstName;
-    private String lastName;
-
-    private String email;
-    private String password;
-
-    private Long schoolId;
-
+public class ParentDto extends UserDto {
     private List<Long> studentIds;
 }

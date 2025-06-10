@@ -1,14 +1,16 @@
 package edu.nbu.team13.gradecenter.services;
 
 import edu.nbu.team13.gradecenter.dtos.ParentDto;
-import edu.nbu.team13.gradecenter.entities.*;
+import edu.nbu.team13.gradecenter.entities.ParentStudent;
+import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
-import edu.nbu.team13.gradecenter.exceptions.*;
+import edu.nbu.team13.gradecenter.exceptions.InvalidUserRole;
 import edu.nbu.team13.gradecenter.repositories.ParentRepository;
 import edu.nbu.team13.gradecenter.repositories.ParentStudentRepository;
 import edu.nbu.team13.gradecenter.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,90 +19,91 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ParentService {
 
-    private final ParentRepository parentRepo;
-    private final ParentStudentRepository linkRepo;
-    private final UserRepository          userRepo;
+    private final ParentRepository parentRepository;
+    private final ParentStudentRepository parentStudentRepository;
+    private final UserService userService;
 
-
+    /**
+     * Creates a new parent user and links it to the specified students.
+     *
+     * @param dto the ParentDto containing parent details and student IDs
+     * @return the created User object representing the parent
+     */
     public User create(ParentDto dto) {
-        if (parentRepo.existsByEmail(dto.getEmail()))
-            throw new EmailNotAvailable(dto.getEmail());
+        User user = userService.create(dto, UserRole.PARENT);
 
-        User parent = toEntity(dto);
-        parent.setRole(UserRole.PARENT);
+        if (dto.getStudentIds() != null) {
+            saveLinks(user, dto.getStudentIds());
+        }
 
-        User savedParent = parentRepo.save(parent);
-
-
-        saveLinks(savedParent, dto.getStudentIds());
-
-        return savedParent;
+        return user;
     }
 
-
+    /**
+     * Retrieves a paginated list of parents based on the provided filters.
+     *
+     * @param fn    first name filter
+     * @param ln    last name filter
+     * @param email email filter
+     * @param pg    pagination information
+     * @return a Page of User objects representing parents
+     */
     public Page<User> index(String fn, String ln, String email, Pageable pg) {
-        return parentRepo.findParentsByFilters(fn, ln, email, pg);
+        return parentRepository.findParentsByFilters(fn, ln, email, pg);
     }
 
-
+    /**
+     * Updates an existing parent user and links it to the specified students.
+     *
+     * @param id  the ID of the parent to update
+     * @param dto the ParentDto containing updated parent details and student IDs
+     * @return the updated User object representing the parent
+     */
     public User update(Long id, ParentDto dto) {
-        User p = parentRepo.findById(id).orElseThrow(() -> new UserNotFound(id));
+        User user = userService.update(id, dto);
 
-        p.setFirstName(dto.getFirstName());
-        p.setLastName(dto.getLastName());
-        p.setSchoolId(dto.getSchoolId());
+        saveLinks(user, dto.getStudentIds());
 
-        if (!p.getEmail().equals(dto.getEmail())) {
-            if (parentRepo.existsByEmail(dto.getEmail()))
-                throw new EmailNotAvailable(dto.getEmail());
-            p.setEmail(dto.getEmail());
-        }
-
-        User saved = parentRepo.save(p);
-
-
-        linkRepo.deleteAll(linkRepo.findAll()
-                .stream()
-                .filter(l -> l.getParent().getId().equals(id))
-                .toList());
-
-        saveLinks(saved, dto.getStudentIds());
-        return saved;
+        return user;
     }
 
-
+    /**
+     * Deletes a parent user by its ID.
+     *
+     * @param id the ID of the parent to delete
+     */
     public void delete(Long id) {
-        parentRepo.delete(parentRepo.findById(id)
-                .orElseThrow(() -> new UserNotFound(id)));
+        parentStudentRepository.deleteAllByParentId(id);
+        userService.delete(id);
     }
 
-
-    private User toEntity(ParentDto d) {
-        User u = new User();
-        u.setFirstName(d.getFirstName());
-        u.setLastName(d.getLastName());
-        u.setEmail(d.getEmail());
-        u.setPassword(d.getPassword());
-        u.setSchoolId(d.getSchoolId());
-        return u;
-    }
-
+    /**
+     * Saves links between a parent and their students.
+     *
+     * @param parent     the parent user
+     * @param studentIds the list of student IDs to link with the parent
+     */
     private void saveLinks(User parent, List<Long> studentIds) {
-        if (studentIds == null) return;
         for (Long sid : studentIds) {
-            User s = userRepo.findById(sid).orElseThrow(() -> new StudentNotFound(sid));
-            if (!s.getRole().equals(UserRole.STUDENT))
-                throw new IllegalArgumentException("User " + sid + " is not a student");
+            User student = userService.findById(sid);
+            if (!student.getRole().equals(UserRole.STUDENT)) {
+                throw new InvalidUserRole(sid, UserRole.STUDENT.name());
+            }
 
-            ParentStudent link = new ParentStudent();
-            link.setParent(parent);
-            link.setStudent(s);
-            linkRepo.save(link);
+            ParentStudent parentStudent = new ParentStudent();
+            parentStudent.setParent(parent);
+            parentStudent.setStudent(student);
+            parentStudentRepository.save(parentStudent);
         }
     }
 
+    /**
+     * Finds a parent by its ID.
+     *
+     * @param id the ID of the parent to find
+     * @return the User object representing the parent
+     */
     public User findById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userService.findById(id);
     }
 }
