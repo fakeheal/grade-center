@@ -15,6 +15,6 @@ export default [
   ...prefix('teachers', [
     index('routes/authenticated/teachers/index.jsx'),
     route('create', 'routes/authenticated/teachers/create.jsx'),
-    // route(':id/edit', 'routes/authenticated/teachers/edit.jsx'),
+    route(':id/edit', 'routes/authenticated/teachers/edit.jsx'),
   ]),
 ];

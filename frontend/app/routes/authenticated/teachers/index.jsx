@@ -64,11 +64,11 @@ export default function Index({ loaderData }) {
                       </td>
                       <td>
                         {teacher.subjects.map(subject => (
-                          <span className="badge badge-ghost badge-sm">{subject.name}</span>
+                          <span key={subject.id} className="badge badge-ghost badge-sm">{subject.name}</span>
                         ))}
                       </td>
                       <th className="text-right">
-                        <button className="btn btn-xs">details</button>
+                        <Link to={`/teachers/${teacher.id}/edit`} className="btn btn-xs">edit</Link>
                       </th>
                     </tr>
                   ))

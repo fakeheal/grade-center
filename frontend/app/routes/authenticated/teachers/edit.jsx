@@ -1,23 +1,27 @@
-import apiConfig from '../../../api.config';
-import settings from '../../../settings';
-import { Link, redirect } from 'react-router';
-import { validateTeacher } from '../../../utilities/validation';
 import TeacherForm from '../../../layout/forms/TeacherForm';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
+import apiConfig from '../../../api.config';
+import settings from '../../../settings';
+import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
+import { Link } from 'react-router';
 
 export function meta() {
   return [
-    { title: 'Create Teacher - Grade Center' },
+    { title: 'Edit Teacher - Grade Center' },
     { name: 'description', content: 'A modern web-based school grade book for teachers, students, and parents.' },
   ];
 }
 
-export async function loader() {
-  const response = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
-  return await response.json();
+export async function loader({ request, params }) {
+  const getSubjectsRequest = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
+  const subjects = await getSubjectsRequest.json();
+
+  const getTeacherRequest = await fetch(`${apiConfig.baseUrl}/teachers/${params.id}`);
+  const teacher = await getTeacherRequest.json();
+  return { subjects, teacher };
 }
 
-export async function clientAction({ request }) {
+export async function clientAction({ request, params }) {
   const schoolId = settings.schoolId;
 
   const formData = await request.formData();
@@ -35,15 +39,15 @@ export async function clientAction({ request }) {
     password,
     repeatPassword,
     subjectIds,
-    schoolId
+    TEACHER_MODE.EDIT,
   );
 
   if (Object.keys(errors).length > 0) {
     return { errors };
   }
 
-  const response = await fetch(`${apiConfig.baseUrl}/teachers`, {
-    method: 'POST',
+  const response = await fetch(`${apiConfig.baseUrl}/teachers/${params.id}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -63,17 +67,22 @@ export async function clientAction({ request }) {
     return { errors: { general: data.message } };
   }
 
-  return redirect('/teachers');
+  return {
+    success: 'Teacher updated successfully',
+  }
 }
 
-export default function Create({ loaderData, actionData }) {
-  const { errors } = actionData || {};
+export default function Edit({ loaderData, actionData }) {
+  const { errors, success } = actionData || {};
+  const { teacher, subjects } = loaderData || {};
+
+
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
       <div className="card mx-auto bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
         <div className="card-body">
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold">New Teacher</h2>
+            <h2 className="text-3xl font-bold">Edit Teacher</h2>
             <Link to={'/teachers'} className="link">&laquo; Teachers</Link>
           </div>
           {errors?.general && (
@@ -82,7 +91,12 @@ export default function Create({ loaderData, actionData }) {
               <span>{errors.general}</span>
             </div>
           )}
-          <TeacherForm teacher={null} errors={errors} subjects={loaderData}/>
+          {success && (
+            <div role="alert" className="alert alert-success">
+              <span>{success}</span>
+            </div>
+          )}
+          <TeacherForm teacher={teacher} errors={errors} subjects={subjects}/>
         </div>
       </div>
     </div>
