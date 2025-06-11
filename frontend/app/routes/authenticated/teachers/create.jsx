@@ -1,7 +1,7 @@
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import { Link, redirect } from 'react-router';
-import { validateTeacher } from '../../../utilities/validation';
+import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
 import TeacherForm from '../../../layout/forms/TeacherForm';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
 
@@ -35,7 +35,7 @@ export async function clientAction({ request }) {
     password,
     repeatPassword,
     subjectIds,
-    schoolId
+    TEACHER_MODE.CREATE
   );
 
   if (Object.keys(errors).length > 0) {
