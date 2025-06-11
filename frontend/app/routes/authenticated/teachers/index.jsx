@@ -47,6 +47,13 @@ export default function Index({ loaderData }) {
                 </tr>
                 </thead>
                 <tbody>
+                {loaderData.content.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="text-center text-sm opacity-50">
+                      No teachers found.
+                    </td>
+                  </tr>
+                )}
                 {
                   loaderData.content.map(teacher => (
                     <tr key={teacher.id}>

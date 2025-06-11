@@ -3,7 +3,8 @@ import ErrorIcon from '../../../layout/icons/ErrorIcon';
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
-import { Link } from 'react-router';
+import { Link, redirect } from 'react-router';
+import TeacherDelete from '../../../layout/forms/TeacherDelete';
 
 export function meta() {
   return [
@@ -21,7 +22,7 @@ export async function loader({ request, params }) {
   return { subjects, teacher };
 }
 
-export async function clientAction({ request, params }) {
+export async function action({ request, params }) {
   const schoolId = settings.schoolId;
 
   const formData = await request.formData();
@@ -76,13 +77,12 @@ export default function Edit({ loaderData, actionData }) {
   const { errors, success } = actionData || {};
   const { teacher, subjects } = loaderData || {};
 
-
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
       <div className="card mx-auto bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
         <div className="card-body">
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold">Edit Teacher</h2>
+            <h2 className="text-3xl font-bold">Edit Teacher 1</h2>
             <Link to={'/teachers'} className="link">&laquo; Teachers</Link>
           </div>
           {errors?.general && (
@@ -99,6 +99,7 @@ export default function Edit({ loaderData, actionData }) {
           <TeacherForm teacher={teacher} errors={errors} subjects={subjects}/>
         </div>
       </div>
+      <TeacherDelete teacherId={teacher.id} onSuccess={() => redirect('/teachers')}/>
     </div>
   );
 }

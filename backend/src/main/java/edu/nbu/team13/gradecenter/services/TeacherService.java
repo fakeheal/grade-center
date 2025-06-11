@@ -104,6 +104,7 @@ public class TeacherService {
         Teacher teacher = teacherRepository.findByUserId(id)
                 .orElseThrow(() -> new TeacherNotFound(id));
 
+        teacher.getSubjects().clear();
         teacherRepository.delete(teacher);
         userService.delete(user.getId());
     }
