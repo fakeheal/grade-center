@@ -61,7 +61,7 @@ export async function clientAction({ request }) {
       lastName,
       email,
       password,
-      subjectIds,
+      subjects: subjectIds.map(id => ({ id })),
       schoolId,
     }),
   });

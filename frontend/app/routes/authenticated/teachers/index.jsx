@@ -63,9 +63,9 @@ export default function Index({ loaderData }) {
                         </div>
                       </td>
                       <td>
-                        <span className="badge badge-ghost badge-sm">Български език</span>,
-                        <span className="badge badge-ghost badge-sm">Литература</span>,
-                        <span className="badge badge-ghost badge-sm">Руски език</span>
+                        {teacher.subjects.map(subject => (
+                          <span className="badge badge-ghost badge-sm">{subject.name}</span>
+                        ))}
                       </td>
                       <th className="text-right">
                         <button className="btn btn-xs">details</button>
