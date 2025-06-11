@@ -1,6 +1,7 @@
 package edu.nbu.team13.gradecenter.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -37,6 +38,7 @@ public class User {
 
     @Setter
     @Column(name = "password", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Getter

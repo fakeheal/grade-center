@@ -58,4 +58,10 @@ public class TeacherController {
         TeacherDto updated = teacherService.update(id, teacherDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        teacherService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

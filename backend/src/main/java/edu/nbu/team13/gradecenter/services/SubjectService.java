@@ -1,13 +1,13 @@
 package edu.nbu.team13.gradecenter.services;
 
 import edu.nbu.team13.gradecenter.dtos.SubjectDto;
-import edu.nbu.team13.gradecenter.entities.School;
 import edu.nbu.team13.gradecenter.entities.Subject;
 import edu.nbu.team13.gradecenter.exceptions.SubjectNotFound;
 import edu.nbu.team13.gradecenter.repositories.SubjectRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SubjectService {
@@ -15,7 +15,7 @@ public class SubjectService {
 
     private final SchoolService schoolService;
 
-    public SubjectService(SubjectRepository subjectRepository, SchoolService schoolService){
+    public SubjectService(SubjectRepository subjectRepository, SchoolService schoolService) {
         this.subjectRepository = subjectRepository;
         this.schoolService = schoolService;
     }
@@ -84,5 +84,15 @@ public class SubjectService {
     public Subject findById(Long id) {
         return subjectRepository.findById(id)
                 .orElseThrow(() -> new SubjectNotFound(id));
+    }
+
+    /**
+     * Finds all subjects by a set of subject IDs.
+     *
+     * @param subjectIds the set of subject IDs
+     * @return a list of subjects
+     */
+    public List<Subject> findAllById(Set<Long> subjectIds) {
+        return subjectRepository.findAllById(subjectIds);
     }
 }
