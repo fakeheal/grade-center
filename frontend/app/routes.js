@@ -28,4 +28,7 @@ export default [
   ...prefix('parents', [
     route(':id/edit', 'routes/authenticated/parents/edit.jsx'),
   ]),
+  ...prefix('subjects', [
+    route(':id/edit', 'routes/authenticated/subjects/edit.jsx'),
+  ]),
 ];

@@ -18,14 +18,6 @@ export default function TeacherForm({ teacher, subjects, errors }) {
         <UserFields errors={errors} setFuncs={{setFirstName,setLastName,setEmail,setPassword,setRepeatPassword}} firstName={firstName} lastName={lastName} email={email} password={password} repeatPassword={repeatPassword} />
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="subjects">Subjects</label>
-          {/*<select name="subjectIds" id="subjects" multiple={true}*/}
-          {/*        className={`mt-0.5 select w-full h-24 ${errors?.subjects ? `input-error` : ``}`}>*/}
-          {/*  {subjects.map(subject => (*/}
-          {/*    <option key={subject.id} value={subject.id} selected={teacher?.subjects?.find(s => s.id === subject.id)}>*/}
-          {/*      {subject.name}*/}
-          {/*    </option>*/}
-          {/*  ))}*/}
-          {/*</select>*/}
           <SubjectSelect subjects={subjects} errors={errors} user={teacher}/>
           {errors?.subjects &&
             <p className="text-error text-xs mt-1">{errors.subjects}</p>}
