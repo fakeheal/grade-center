@@ -11,7 +11,7 @@ export function meta() {
 
 export async function loader({ request }) {
   const page = (new URL(request.url)).searchParams.get('page') || 0;
-  const response = await fetch(`${apiConfig.baseUrl}/teachers?page=${page}`);
+  const response = await fetch(`${apiConfig.baseUrl}/teachers`);
   return await response.json();
 }
 
