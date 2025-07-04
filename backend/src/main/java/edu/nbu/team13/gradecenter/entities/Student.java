@@ -26,8 +26,7 @@ public class Student {
     private Long classId;
 
 
-    @Getter
-    @Setter
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
 }
