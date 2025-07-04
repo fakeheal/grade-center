@@ -1,23 +1,17 @@
+import React, { useState } from 'react';
 import {
     Form,
-    Link,
     redirect,
     useActionData,
     useLoaderData,
-    useParams,
 } from 'react-router';
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import ParentForm from '../../../layout/forms/ParentForm';
 import { validateParent } from '../../../utilities/validation';
 
-export async function loader({ params }) {
-    // fetch parent
-    const parentRes = await fetch(`${apiConfig.baseUrl}/parents/${params.id}`);
-    if (!parentRes.ok) throw new Response('Parent not found', { status: 404 });
-    const parent = await parentRes.json();
-
-    // fetch students
+export async function loader() {
+    // 1) get all students for this school
     const studentsRes = await fetch(
         `${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`
     );
@@ -26,14 +20,10 @@ export async function loader({ params }) {
     // The backend now returns students with firstName and lastName directly
     const students = studentsRaw;
 
-    // The parent object now directly contains studentIds from the backend
-    // No need for complex pre-selection logic here
-
-    return { parent, students };
+    return students;
 }
 
-
-export async function action({ request, params }) {
+export async function action({ request }) {
     const formData = await request.formData();
 
     const payload = {
@@ -46,30 +36,27 @@ export async function action({ request, params }) {
         studentIds: formData.getAll('studentIds').map(Number),
     };
 
-    const errors = validateParent(payload, 'EDIT');
+    const errors = validateParent(payload, 'CREATE');
     if (Object.keys(errors).length) return { errors };
 
-    const res = await fetch(`${apiConfig.baseUrl}/parents/${params.id}`, {
-        method: 'PUT',
+    const res = await fetch(`${apiConfig.baseUrl}/parents`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-        const msg = (await res.json())?.message ?? 'Failed to update.';
+        const msg = (await res.json())?.message ?? 'Failed to create parent.';
         return { errors: { general: msg } };
     }
 
-    return { success: true };
+    return redirect('/parents');
 }
 
-import React, { useState, useEffect } from 'react';
-
-export default function EditParent() {
-    const { parent, students } = useLoaderData();
+export default function CreateParent() {
+    const students = useLoaderData();
     const actionData = useActionData();
     const errors = actionData?.errors ?? {};
-    const success = actionData?.success;
 
     // Central state for the entire form
     const [formData, setFormData] = useState({
@@ -80,20 +67,6 @@ export default function EditParent() {
         repeatPassword: '',
         studentIds: [],
     });
-
-    // Effect to populate form state when loader data is available
-    useEffect(() => {
-        if (parent) {
-            setFormData({
-                firstName: parent.firstName ?? '',
-                lastName: parent.lastName ?? '',
-                email: parent.email ?? '',
-                password: '',
-                repeatPassword: '',
-                studentIds: parent.studentIds || parent.children?.map(c => c.id) || [],
-            });
-        }
-    }, [parent]);
 
     // Handler to update state for any form field
     const handleFormChange = (field, value) => {
@@ -107,33 +80,22 @@ export default function EditParent() {
 
     return (
         <div className="p-6 max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Edit Parent</h1>
+            <h1 className="text-2xl font-bold mb-4">Add Parent</h1>
 
-            {success && (
-                <div className="alert alert-success mb-4">
-                    Parent saved successfully.
-                </div>
-            )}
             {errors.general && (
                 <div className="alert alert-error mb-4">{errors.general}</div>
             )}
 
-            <Form method="post">
+            <Form method="post" replace>
                 <ParentForm
                     students={students}
                     errors={errors}
                     formData={formData}
                     onFormChange={handleFormChange}
                     onStudentChange={handleStudentSelectionChange}
-                    isEdit={true}
+                    isEdit={false}
                 />
             </Form>
-
-            <hr className="my-6" />
-
-            <Link to="/parents" className="btn btn-neutral w-full">
-                Back to Parent List
-            </Link>
         </div>
     );
 }

@@ -1,12 +1,15 @@
 package edu.nbu.team13.gradecenter.controllers;
 
 import edu.nbu.team13.gradecenter.dtos.ParentDto;
+import edu.nbu.team13.gradecenter.dtos.ParentResponseDto;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.services.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/parents")
@@ -40,7 +43,7 @@ public class ParentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> show(@PathVariable Long id) {
+    public ResponseEntity<ParentResponseDto> show(@PathVariable Long id) {
         return ResponseEntity.ok(svc.findById(id));
     }
 
@@ -48,5 +51,10 @@ public class ParentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         svc.delete(id);
+    }
+
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<User>> getStudentsForParent(@PathVariable Long id) {
+        return ResponseEntity.ok(svc.getStudentsForParent(id));
     }
 }
