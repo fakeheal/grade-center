@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StudentDto {
+public class StudentDto extends UserDto{
     private Long grade;
     private Long classId;
-    private Long userId;
+    private Long schoolId;
 }
-
