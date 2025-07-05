@@ -5,13 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StudentDto {
+public class StudentDto extends UserDto{
     private Long grade;
     private Long classId;
-    private Long userId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
     private Long schoolId;
 }
