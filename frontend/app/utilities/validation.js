@@ -86,3 +86,28 @@ export function validateDirector(
 
   return errors;
 }
+
+export function validateParent(data, mode = 'CREATE') {
+  const errors = {};
+
+  if (!data.firstName?.trim()) errors.firstName = 'First name is required.';
+  if (!data.lastName?.trim()) errors.lastName = 'Last name is required.';
+
+  if (!data.email?.trim()) errors.email = 'Email is required.';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
+    errors.email = 'Invalid e-mail.';
+
+  if (mode === 'CREATE') {
+    if (!data.password) errors.password = 'Password is required.';
+    if (data.password !== data.repeatPassword)
+      errors.repeatPassword = 'Passwords do not match.';
+  } else if (mode === 'EDIT' && data.password) {
+    if (data.password !== data.repeatPassword)
+      errors.repeatPassword = 'Passwords do not match.';
+  }
+
+  if (!Array.isArray(data.studentIds) || data.studentIds.length === 0)
+    errors.students = 'Select at least one child.';
+
+  return errors;
+}

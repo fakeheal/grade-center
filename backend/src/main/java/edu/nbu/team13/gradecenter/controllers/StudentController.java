@@ -1,10 +1,8 @@
 package edu.nbu.team13.gradecenter.controllers;
 
-import edu.nbu.team13.gradecenter.dtos.SchoolDto;
 import edu.nbu.team13.gradecenter.dtos.StudentDto;
-import edu.nbu.team13.gradecenter.entities.School;
+import edu.nbu.team13.gradecenter.dtos.StudentResponseDto;
 import edu.nbu.team13.gradecenter.entities.Student;
-import edu.nbu.team13.gradecenter.services.SchoolService;
 import edu.nbu.team13.gradecenter.services.StudentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,7 @@ public class StudentController {
         this.studentService = studentService;
     }
     @GetMapping
-    public ResponseEntity<Page<Student>> index(
+    public ResponseEntity<Page<StudentResponseDto>> index(
             @RequestParam(required = false) Long grade,
             @RequestParam(required = false) Long classId,
             @RequestParam(required = false) Long userId,
@@ -31,13 +29,13 @@ public class StudentController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> students = studentService.search(grade,classId,userId, pageable);
-        return ResponseEntity.ok(students);
+        return ResponseEntity.ok(students.map(StudentResponseDto::new));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> show(@PathVariable Long id) {
+    public ResponseEntity<StudentResponseDto> show(@PathVariable Long id) {
         Student student = studentService.findById(id);
-        return ResponseEntity.ok(student);
+        return ResponseEntity.ok(new StudentResponseDto(student));
     }
 
     @PostMapping

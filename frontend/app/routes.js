@@ -26,7 +26,9 @@ export default [
     route(':id/edit', 'routes/authenticated/director/edit.jsx'),
   ]),
   ...prefix('parents', [
-    route(':id/edit', 'routes/authenticated/parents/edit.jsx'),
+    index('routes/authenticated/parents/index.jsx'),       // List all parents
+    route('create', 'routes/authenticated/parents/create.jsx'), // Add new parent
+    route(':id/edit', 'routes/authenticated/parents/edit.jsx'), // Edit parent
   ]),
   ...prefix('subjects', [
     route(':id/edit', 'routes/authenticated/subjects/edit.jsx'),
