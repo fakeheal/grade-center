@@ -28,9 +28,10 @@ export default function Week({ subjectsWithTeachers, existing }) {
                 const existingSubjectForDayAndTime = existing
                   .find(subject => subject.dayOfWeek === WEEKDAYS[day] && subject.startTime === parseTime(time));
                 if (existingSubjectForDayAndTime) {
-                  selected = `${existingSubjectForDayAndTime.subject.id}-${existingSubjectForDayAndTime.teacher.id}`;
+                  selected = `${existingSubjectForDayAndTime.teacher.id}-${existingSubjectForDayAndTime.subject.id}`;
                 }
               }
+
 
               return (
                 <React.Fragment key={`col-${index}-${dayIndex}`}>

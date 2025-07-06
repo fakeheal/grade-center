@@ -1,4 +1,4 @@
-import { Form, redirect } from 'react-router';
+import { Form } from 'react-router';
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import ClassSelect from '../../../layout/forms/components/ClassSelect';
@@ -48,13 +48,12 @@ export async function clientAction({ request }) {
   if (!response.ok) {
     return { errors: { general: data.message } };
   }
-
-  return redirect('/timetables');
+  return { success: true };
 }
 
 export default function CreateTimetable({ loaderData, actionData }) {
   const { subjectsWithTeachers, classes } = loaderData;
-  const { errors } = actionData || {};
+  const { errors, success } = actionData || {};
 
   const [classId, setClassId] = React.useState(null);
 
@@ -72,7 +71,7 @@ export default function CreateTimetable({ loaderData, actionData }) {
         }
       })
       .then(data => {
-        if(data) {
+        if (data) {
           setTimetable(data.subjects);
         }
       });
@@ -106,6 +105,12 @@ export default function CreateTimetable({ loaderData, actionData }) {
                   <button className="btn btn-primary mt-4 w-full" type="submit">
                     Save Timetable
                   </button>
+                  {success && (
+                    <div role="alert"
+                         className="alert alert-success mt-2">
+                      <span>Timetable successfully updated!</span>
+                    </div>
+                  )}
                 </div>
               )}
             </Form>
