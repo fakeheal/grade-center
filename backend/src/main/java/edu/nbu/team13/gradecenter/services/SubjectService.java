@@ -4,6 +4,7 @@ import edu.nbu.team13.gradecenter.dtos.SubjectDto;
 import edu.nbu.team13.gradecenter.entities.Subject;
 import edu.nbu.team13.gradecenter.exceptions.SubjectNotFound;
 import edu.nbu.team13.gradecenter.repositories.SubjectRepository;
+import edu.nbu.team13.gradecenter.repositories.views.SubjectTeacherView;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -94,5 +95,9 @@ public class SubjectService {
      */
     public List<Subject> findAllById(Set<Long> subjectIds) {
         return subjectRepository.findAllById(subjectIds);
+    }
+
+    public List<SubjectTeacherView> findAllWithTeachers(Long schoolId) {
+        return subjectRepository.findAllWithTeachers(schoolId);
     }
 }

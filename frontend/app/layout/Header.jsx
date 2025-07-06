@@ -15,13 +15,15 @@ export default () => {
                                 <NavLink to="/dashboard">Dashboard</NavLink>
                             </li>
                             <li>
+                                <NavLink to="/timetables">Timetables</NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/students">Students</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/teachers">Teachers</NavLink>
                             </li>
 
-                            {/* 🆕 Parents link */}
                             <li>
                                 <NavLink to="/parents">Parents</NavLink>
                             </li>

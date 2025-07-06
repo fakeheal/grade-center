@@ -2,6 +2,7 @@ package edu.nbu.team13.gradecenter.controllers;
 
 import edu.nbu.team13.gradecenter.dtos.SubjectDto;
 import edu.nbu.team13.gradecenter.entities.Subject;
+import edu.nbu.team13.gradecenter.repositories.views.SubjectTeacherView;
 import edu.nbu.team13.gradecenter.services.SubjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,4 +51,11 @@ public class SubjectController {
         subjectService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/teachers/{id}")
+    public ResponseEntity<List<SubjectTeacherView>> getSubjectsWithTeachers(@PathVariable Long id) {
+        List<SubjectTeacherView> subjects = subjectService.findAllWithTeachers(id);
+        return ResponseEntity.ok(subjects);
+    }
+
 }

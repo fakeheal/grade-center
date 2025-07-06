@@ -125,6 +125,17 @@ public class TeacherService {
     }
 
     /**
+     * Finds a teacher by ID.
+     *
+     * @param id the ID of the teacher to find
+     * @return the found teacher entity
+     */
+    public Teacher findById(Long id) {
+        return teacherRepository.findById(id)
+                .orElseThrow(() -> new TeacherNotFound(id));
+    }
+
+    /**
      * Finds teachers by optional filters - first name, last name, email, school ID, and user ID.
      *
      * @param firstName search filter for first name
