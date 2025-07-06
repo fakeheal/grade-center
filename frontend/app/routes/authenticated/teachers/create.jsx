@@ -13,13 +13,16 @@ export function meta() {
 }
 
 export async function loader() {
-  const response = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
-  return await response.json();
+  const subjectsRes = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
+  const subjects = await subjectsRes.json();
+
+  const schoolsRes = await fetch(`${apiConfig.baseUrl}/schools`);
+  const schools = await schoolsRes.json();
+
+  return { subjects, schools: schools.content };
 }
 
 export async function clientAction({ request }) {
-  const schoolId = settings.schoolId;
-
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -27,6 +30,8 @@ export async function clientAction({ request }) {
   const password = formData.get('password');
   const repeatPassword = formData.get('repeatPassword');
   const subjectIds = formData.getAll('subjectIds');
+  const schoolId = formData.get('schoolId');
+  const grade = formData.get('grade');
 
   const errors = validateTeacher(
     firstName,
@@ -35,6 +40,8 @@ export async function clientAction({ request }) {
     password,
     repeatPassword,
     subjectIds,
+    schoolId,
+    grade,
     TEACHER_MODE.CREATE
   );
 
@@ -53,7 +60,8 @@ export async function clientAction({ request }) {
       email,
       password,
       subjects: subjectIds.map(id => ({ id })),
-      schoolId,
+      schoolId: Number(schoolId),
+      grade: Number(grade),
     }),
   });
 
@@ -68,6 +76,7 @@ export async function clientAction({ request }) {
 
 export default function Create({ loaderData, actionData }) {
   const { errors } = actionData || {};
+  const { subjects, schools } = loaderData || {};
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
       <div className="card mx-auto bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -82,7 +91,7 @@ export default function Create({ loaderData, actionData }) {
               <span>{errors.general}</span>
             </div>
           )}
-          <TeacherForm teacher={null} errors={errors} subjects={loaderData}/>
+          <TeacherForm teacher={null} errors={errors} subjects={subjects} schools={schools}/>
         </div>
       </div>
     </div>

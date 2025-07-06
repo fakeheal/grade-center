@@ -44,6 +44,7 @@ public class TeacherService {
 
         User user = userService.create(teacherDto, UserRole.TEACHER);
         newTeacher.setUser(user);
+        newTeacher.setGrade(teacherDto.getGrade());
 
 
         Teacher teacher = teacherRepository.save(newTeacher);
@@ -67,6 +68,7 @@ public class TeacherService {
                 .orElseThrow(() -> new TeacherNotFound(id));
 
         userService.update(user.getId(), teacherDto);
+        teacher.setGrade(teacherDto.getGrade());
 
         this.syncSubjects(teacher, teacherDto.getSubjects());
 

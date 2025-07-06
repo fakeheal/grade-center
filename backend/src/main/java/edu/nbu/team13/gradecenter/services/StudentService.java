@@ -6,6 +6,7 @@ import edu.nbu.team13.gradecenter.entities.Student;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.repositories.StudentRepository;
+import edu.nbu.team13.gradecenter.repositories.GradeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final UserService userService;
+    private final GradeRepository gradeRepository;
 
-    public StudentService(StudentRepository studentRepository, UserService userService) {
+    public StudentService(StudentRepository studentRepository, UserService userService, GradeRepository gradeRepository) {
         this.studentRepository = studentRepository;
         this.userService = userService;
+        this.gradeRepository = gradeRepository;
     }
 
     @Transactional
@@ -72,13 +75,30 @@ public class StudentService {
     public void delete(Long id) {
         // Find the existing student by ID
         Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> {
+                    return new RuntimeException("Student not found");
+                });
 
-        // Delete the student entity from the database
-        studentRepository.delete(existingStudent);
+        try {
+            // Delete associated grades first
+            gradeRepository.deleteByStudentId(existingStudent.getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete associated grades", e);
+        }
 
-        // Delete the associated User entity
-        userService.delete(existingStudent.getUser().getId());
+        try {
+            // Delete the student entity from the database
+            studentRepository.delete(existingStudent);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete student entity", e);
+        }
+
+        try {
+            // Delete the associated User entity
+            userService.delete(existingStudent.getUser().getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete associated user entity", e);
+        }
     }
 
     public Student findById(Long id) {

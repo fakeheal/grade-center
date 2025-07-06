@@ -19,12 +19,14 @@ export async function loader({ request, params }) {
 
   const getTeacherRequest = await fetch(`${apiConfig.baseUrl}/teachers/${params.id}`);
   const teacher = await getTeacherRequest.json();
-  return { subjects, teacher };
+
+  const getSchoolsRequest = await fetch(`${apiConfig.baseUrl}/schools`);
+  const schools = await getSchoolsRequest.json();
+
+  return { subjects, teacher, schools: schools.content };
 }
 
 export async function action({ request, params }) {
-  const schoolId = settings.schoolId;
-
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -32,6 +34,8 @@ export async function action({ request, params }) {
   const password = formData.get('password');
   const repeatPassword = formData.get('repeatPassword');
   const subjectIds = formData.getAll('subjectIds');
+  const schoolId = formData.get('schoolId');
+  const grade = formData.get('grade');
 
   const errors = validateTeacher(
     firstName,
@@ -40,6 +44,8 @@ export async function action({ request, params }) {
     password,
     repeatPassword,
     subjectIds,
+    schoolId,
+    grade,
     TEACHER_MODE.EDIT,
   );
 
@@ -58,7 +64,8 @@ export async function action({ request, params }) {
       email,
       password,
       subjects: subjectIds.map(id => ({ id })),
-      schoolId,
+      schoolId: Number(schoolId),
+      grade: Number(grade),
     }),
   });
 
@@ -75,7 +82,7 @@ export async function action({ request, params }) {
 
 export default function Edit({ loaderData, actionData }) {
   const { errors, success } = actionData || {};
-  const { teacher, subjects } = loaderData || {};
+  const { teacher, subjects, schools } = loaderData || {};
 
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
@@ -96,7 +103,7 @@ export default function Edit({ loaderData, actionData }) {
               <span>{success}</span>
             </div>
           )}
-          <TeacherForm teacher={teacher} errors={errors} subjects={subjects}/>
+          <TeacherForm teacher={teacher} errors={errors} subjects={subjects} schools={schools}/>
         </div>
       </div>
       <TeacherDelete teacherId={teacher.id} onSuccess={() => redirect('/teachers')}/>

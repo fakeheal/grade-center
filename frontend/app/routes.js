@@ -7,7 +7,11 @@ export default [
 
   route('dashboard', 'routes/authenticated/dashboard.jsx'),
   route('school/edit', 'routes/authenticated/school/edit.jsx'),
-  route('students', 'routes/authenticated/students/index.jsx'),
+  ...prefix('students', [
+    index('routes/authenticated/students/index.jsx'),
+    route('create', 'routes/authenticated/students/create.jsx'),
+    route(':id/edit', 'routes/authenticated/students/edit.jsx'),
+  ]),
 
   /**
    * Teachers routes
@@ -44,5 +48,9 @@ export default [
   ]),
   ...prefix('subjects', [
     route(':id/edit', 'routes/authenticated/subjects/edit.jsx'),
+  ]),
+  ...prefix('grades', [
+    index('routes/authenticated/grades/index.jsx'),
+    route('create', 'routes/authenticated/grades/create.jsx'),
   ]),
 ];

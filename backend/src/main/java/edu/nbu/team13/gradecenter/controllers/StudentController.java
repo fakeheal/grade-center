@@ -48,4 +48,10 @@ public class StudentController {
         Student updated = studentService.update(id,studentDto);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        studentService.delete(id);
+    }
 }

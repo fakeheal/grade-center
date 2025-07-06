@@ -22,6 +22,10 @@ public class Teacher {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Getter
+    @Setter
+    @Column(name = "grade", nullable = false)
+    private Long grade;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(

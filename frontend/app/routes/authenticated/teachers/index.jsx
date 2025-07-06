@@ -1,6 +1,21 @@
-import React from 'react';
 import apiConfig from '../../../api.config';
-import { Link } from 'react-router';
+import React from 'react';
+import { Link, redirect, Form, useNavigation } from 'react-router';
+import { Trash2 } from 'lucide-react';
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const id = formData.get('deleteId');
+
+  const res = await fetch(`${apiConfig.baseUrl}/teachers/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok)
+    return { error: 'Delete failed. Maybe teacher has grades linked.' };
+
+  return redirect('/teachers');
+}
 
 export function meta() {
   return [
@@ -43,7 +58,7 @@ export default function Index({ loaderData }) {
                 <tr>
                   <th>Teacher</th>
                   <th>Subjects</th>
-                  <th></th>
+                  <th className="text-center">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -74,9 +89,35 @@ export default function Index({ loaderData }) {
                           <span key={subject.id} className="badge badge-ghost badge-sm">{subject.name}</span>
                         ))}
                       </td>
-                      <th className="text-right">
-                        <Link to={`/teachers/${teacher.id}/edit`} className="btn btn-xs">edit</Link>
-                      </th>
+                      <td className="flex gap-2 justify-center">
+                        <Link
+                          to={`/teachers/${teacher.id}/edit`}
+                          className="btn btn-sm btn-outline"
+                          title="Edit"
+                        >
+                          Edit
+                        </Link>
+                        <Form method="post" className="inline">
+                          <input type="hidden" name="deleteId" value={teacher.user.id} />
+                          <button
+                            type="submit"
+                            className="btn btn-sm btn-error"
+                            title="Delete"
+                            disabled={navigation.state === 'submitting'}
+                            onClick={(e) => {
+                              if (
+                                !window.confirm(
+                                  `Delete ${teacher.user.firstName} ${teacher.user.lastName}?`
+                                )
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </Form>
+                      </td>
                     </tr>
                   ))
                 }
