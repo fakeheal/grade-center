@@ -2,6 +2,7 @@ package edu.nbu.team13.gradecenter.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.nbu.team13.gradecenter.dtos.UserDto;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -59,4 +60,11 @@ public class User {
     @Column(name = "updated_on", nullable = false)
     private Instant updatedOn;
 
+    public User() {}
+    public void FromDto(UserDto dto){
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+    }
 }

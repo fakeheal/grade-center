@@ -28,5 +28,10 @@ public class Class {
     @Setter
     @Column(name = "school_id", nullable = false)
     private Long schoolId;
-
+    public Class() {}
+    public void FromDto(edu.nbu.team13.gradecenter.dtos.ClassDto dto){
+        this.name = dto.getName();
+        this.grade = dto.getGrade();
+        this.schoolId = dto.getSchoolId();
+    }
 }
