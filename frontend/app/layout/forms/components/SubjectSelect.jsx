@@ -1,14 +1,18 @@
-import React from "react";
+import React from 'react';
 
-export default function SubjectSelect({subjects,user, errors }) {
-    return (
-        <select name="subjectIds" id="subjects" multiple={true}
-                className={`mt-0.5 select w-full h-24 ${errors?.subjects ? `input-error` : ``}`}>
-            {subjects.map(subject => (
-                <option key={subject.id} value={subject.id} selected={user?.subjects?.find(s => s.id === subject.id)}>
-                    {subject.name}
-                </option>
-            ))}
-        </select>
-    )
+export default function SubjectSelect({ multiselect, subjects, selectedIds, errors, size }) {
+  return (
+    <select
+      name="subjectIds"
+      id="subjects"
+      multiple={multiselect}
+      className={`mt-0.5 select w-full ${errors?.subjects ? `input-error` : ``} ${size}`}>
+      <option>Select subject</option>
+      {subjects.map(subject => (
+        <option key={subject.id} value={subject.id} selected={selectedIds.includes(subject.id)}>
+          {subject.name}
+        </option>
+      ))}
+    </select>
+  )
 }

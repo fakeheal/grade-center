@@ -1,7 +1,7 @@
 import { Form } from 'react-router';
 import React from 'react';
-import UserFields from "./components/UserFields.jsx";
-import SubjectSelect from "./components/SubjectSelect.jsx";
+import UserFields from './components/UserFields.jsx';
+import SubjectSelect from './components/SubjectSelect.jsx';
 
 export default function TeacherForm({ teacher, subjects, errors }) {
   const [firstName, setFirstName] = React.useState(teacher?.firstName || '');
@@ -15,10 +15,23 @@ export default function TeacherForm({ teacher, subjects, errors }) {
   return (
     <Form method="post">
       <fieldset className="fieldset">
-        <UserFields errors={errors} setFuncs={{setFirstName,setLastName,setEmail,setPassword,setRepeatPassword}} firstName={firstName} lastName={lastName} email={email} password={password} repeatPassword={repeatPassword} />
+        <UserFields
+          errors={errors}
+          setFuncs={{ setFirstName, setLastName, setEmail, setPassword, setRepeatPassword }}
+          firstName={firstName}
+          lastName={lastName}
+          email={email}
+          password={password}
+          repeatPassword={repeatPassword}
+        />
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="subjects">Subjects</label>
-          <SubjectSelect subjects={subjects} errors={errors} user={teacher}/>
+          <SubjectSelect
+            multiselect
+            subjects={subjects}
+            errors={errors}
+            selectedIds={teacher?.subjects?.map(s => s.id)}
+          />
           {errors?.subjects &&
             <p className="text-error text-xs mt-1">{errors.subjects}</p>}
         </div>

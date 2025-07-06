@@ -18,6 +18,13 @@ export default [
     route(':id/edit', 'routes/authenticated/teachers/edit.jsx'),
   ]),
 
+  /**
+   * Timetable routes
+   */
+  ...prefix('timetables', [
+    index('routes/authenticated/timetables/create.jsx')
+  ]),
+
   ...prefix('class', [
     index('routes/authenticated/class/index.jsx'),
     route(':id/edit', 'routes/authenticated/class/edit.jsx'),
