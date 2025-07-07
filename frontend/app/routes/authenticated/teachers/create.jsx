@@ -1,9 +1,10 @@
 import apiConfig from '../../../api.config';
-import settings from '../../../settings';
-import { Link, redirect } from 'react-router';
+import { Link, redirect, useNavigate, useOutletContext } from 'react-router';
 import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
 import TeacherForm from '../../../layout/forms/TeacherForm';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
+import { extractJwtToken, USER_ROLES } from '../../../utilities/user';
+import React from 'react';
 
 export function meta() {
   return [
@@ -12,14 +13,27 @@ export function meta() {
   ];
 }
 
-export async function loader() {
-  const response = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
+export async function loader({ request }) {
+  const cookie = request.headers.get('cookie');
+  const token = extractJwtToken(cookie);
+  const userRequest = await fetch(`${apiConfig.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const userResponse = await userRequest.json();
+  const response = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${userResponse.school.id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   return await response.json();
 }
 
 export async function clientAction({ request }) {
-  const schoolId = settings.schoolId;
-
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -27,6 +41,8 @@ export async function clientAction({ request }) {
   const password = formData.get('password');
   const repeatPassword = formData.get('repeatPassword');
   const subjectIds = formData.getAll('subjectIds');
+  const token = formData.get('token');
+  const schoolId = formData.get('schoolId');
 
   const errors = validateTeacher(
     firstName,
@@ -46,6 +62,7 @@ export async function clientAction({ request }) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       firstName,
@@ -67,7 +84,16 @@ export async function clientAction({ request }) {
 }
 
 export default function Create({ loaderData, actionData }) {
+  const { user, token } = useOutletContext();
   const { errors } = actionData || {};
+  let navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user.role !== USER_ROLES.ADMINISTRATOR && user.role !== USER_ROLES.DIRECTOR) {
+      navigate('/dashboard');
+    }
+  }, []);
+
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
       <div className="card mx-auto bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -82,7 +108,7 @@ export default function Create({ loaderData, actionData }) {
               <span>{errors.general}</span>
             </div>
           )}
-          <TeacherForm teacher={null} errors={errors} subjects={loaderData}/>
+          <TeacherForm teacher={null} errors={errors} subjects={loaderData} token={token} schoolId={user.school.id}/>
         </div>
       </div>
     </div>

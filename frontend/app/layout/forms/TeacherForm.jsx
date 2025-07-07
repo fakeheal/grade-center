@@ -3,7 +3,7 @@ import React from 'react';
 import UserFields from './components/UserFields.jsx';
 import SubjectSelect from './components/SubjectSelect.jsx';
 
-export default function TeacherForm({ teacher, subjects, errors }) {
+export default function TeacherForm({ teacher, subjects, errors, token, schoolId }) {
   const [firstName, setFirstName] = React.useState(teacher?.firstName || '');
   const [lastName, setLastName] = React.useState(teacher?.lastName || '');
   const [email, setEmail] = React.useState(teacher?.email || '');
@@ -11,10 +11,11 @@ export default function TeacherForm({ teacher, subjects, errors }) {
   const [repeatPassword, setRepeatPassword] = React.useState('');
   const [subjectIds, setSubjectIds] = React.useState(teacher?.subjects?.map(subject => subject.id) || []);
 
-
   return (
     <Form method="post">
       <fieldset className="fieldset">
+        <input type="hidden" name="token" value={token}/>
+        <input type="hidden" name="schoolId" value={schoolId}/>
         <UserFields
           errors={errors}
           setFuncs={{ setFirstName, setLastName, setEmail, setPassword, setRepeatPassword }}
@@ -27,10 +28,11 @@ export default function TeacherForm({ teacher, subjects, errors }) {
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="subjects">Subjects</label>
           <SubjectSelect
+            size="h-32"
             multiselect
             subjects={subjects}
             errors={errors}
-            selectedIds={teacher?.subjects?.map(s => s.id)}
+            selectedIds={teacher?.subjects?.map(s => s.id) || []}
           />
           {errors?.subjects &&
             <p className="text-error text-xs mt-1">{errors.subjects}</p>}

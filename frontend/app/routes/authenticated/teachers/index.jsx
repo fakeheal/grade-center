@@ -1,6 +1,7 @@
 import React from 'react';
 import apiConfig from '../../../api.config';
-import { Link } from 'react-router';
+import { Link, useNavigate, useOutletContext } from 'react-router';
+import { extractJwtToken, USER_ROLES } from '../../../utilities/user';
 
 export function meta() {
   return [
@@ -10,16 +11,36 @@ export function meta() {
 }
 
 export async function loader({ request }) {
+  const cookie = request.headers.get('cookie');
+  const token = extractJwtToken(cookie);
+  const userRequest = await fetch(`${apiConfig.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const userResponse = await userRequest.json();
   const page = (new URL(request.url)).searchParams.get('page') || 0;
-  const response = await fetch(`${apiConfig.baseUrl}/teachers`);
+  const response = await fetch(`${apiConfig.baseUrl}/teachers?page=${page}&schoolId=${userResponse.school.id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   return await response.json();
 }
 
-export function HydrateFallback() {
-  return <div>Loading...</div>;
-}
-
 export default function Index({ loaderData }) {
+  const { user, token } = useOutletContext();
+  let navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user.role !== USER_ROLES.ADMINISTRATOR && user.role !== USER_ROLES.DIRECTOR) {
+      navigate('/dashboard');
+    }
+  }, []);
+
   return (
     <div className="container mx-auto">
       <div className="py-8 breadcrumbs text-sm">
@@ -75,7 +96,7 @@ export default function Index({ loaderData }) {
                         ))}
                       </td>
                       <th className="text-right">
-                        <Link to={`/teachers/${teacher.id}/edit`} className="btn btn-xs">edit</Link>
+                        <Link to={`/teachers/${teacher.user.id}/edit`} className="btn btn-xs">edit</Link>
                       </th>
                     </tr>
                   ))
