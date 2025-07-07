@@ -79,6 +79,13 @@ public class SchoolAndSubjectSeeder implements CommandLineRunner {
         schoolDto2.setAddress("бул. Цариградско шосе 7, гр. София, България");
         School school2 = schoolService.create(schoolDto2);
 
+        for (String subjectName : subjectNames) {
+            SubjectDto subjectDto = new SubjectDto();
+            subjectDto.setName(subjectName);
+            subjectDto.setSchoolId(school2.getId());
+            subjectService.create(subjectDto);
+        }
+
         UserDto adminDto = new UserDto();
         adminDto.setEmail("georgi.dimitrov@admin.com");
         adminDto.setPassword("password123");
@@ -104,7 +111,7 @@ public class SchoolAndSubjectSeeder implements CommandLineRunner {
 
         Class classEntity = classService.create(classDto);
 
-        ClassDto classDto2 = new ClassDto("A", school.getId(), 11L);
+        ClassDto classDto2 = new ClassDto("A", school2.getId(), 11L);
         classDto.setName("B");
 
         Class classEntity2 = classService.create(classDto2);

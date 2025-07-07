@@ -3,7 +3,6 @@ const formatKey = (subjectWithTeacher) => {
 }
 
 export default function TimetableSubject({ day, time, subjectsWithTeachers, selected }) {
-  console.log('Already selected', selected);
   return (
     <>
       <select

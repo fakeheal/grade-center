@@ -22,8 +22,7 @@ public class CustomizedTeacherRepositoryImpl implements CustomizedTeacherReposit
         PaginationUtil<Teacher> pgUtil = new PaginationUtil<>(entityManager, cb, Teacher.class);
 
         Map<String, String> filters = new java.util.HashMap<>();
-        //@TODO: Search by firstName, lastName, email, schoolId inside USER
-//        if (schoolId != null) filters.put("schoolId", schoolId.toString());
+        if (schoolId != null) filters.put("user.school.id", schoolId.toString());
         if (userId != null) filters.put("userId", userId.toString());
 
         // --- Main Query --

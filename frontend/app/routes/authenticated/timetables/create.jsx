@@ -1,12 +1,12 @@
-import { Form } from 'react-router';
+import { Form, useOutletContext } from 'react-router';
 import apiConfig from '../../../api.config';
-import settings from '../../../settings';
 import ClassSelect from '../../../layout/forms/components/ClassSelect';
 import Week from '../../../layout/forms/components/timetable/Week';
 import { parseFormDataIntoTimetable } from '../../../utilities/timetable';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
 import React from 'react';
 import { extractJwtToken } from '../../../utilities/user';
+import SchoolYearSelect from '../../../layout/forms/components/SchoolYearSelect';
 
 
 export function meta() {
@@ -37,6 +37,15 @@ export async function loader({ request }) {
   });
   const classesResponse = await classesRequest.json();
 
+  const schoolYearsRequest = await fetch(`${apiConfig.baseUrl}/school-years?schoolId=${userResponse.school.id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const schoolYearsResponse = await schoolYearsRequest.json();
+
   const subjectsWithTeachersRequest = await fetch(`${apiConfig.baseUrl}/subjects/teachers/${userResponse.school.id}`, {
     method: 'GET',
     headers: {
@@ -49,6 +58,7 @@ export async function loader({ request }) {
   return {
     classes: classesResponse.content,
     subjectsWithTeachers: subjectsWithTeachersResponse,
+    schoolYears: schoolYearsResponse.content,
   }
 }
 
@@ -60,10 +70,11 @@ export async function clientAction({ request }) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${formData.get('token')}`
     },
     body: JSON.stringify({
       classId: formData.get('classId'),
-      schoolYearId: settings.schoolYearId,
+      schoolYearId: formData.get('schoolYearId'),
       subjects: timetable,
     }),
   });
@@ -77,19 +88,26 @@ export async function clientAction({ request }) {
 }
 
 export default function CreateTimetable({ loaderData, actionData }) {
-  const { subjectsWithTeachers, classes } = loaderData;
+  const { user, token } = useOutletContext('root');
+  const { subjectsWithTeachers, classes, schoolYears } = loaderData;
   const { errors, success } = actionData || {};
 
   const [classId, setClassId] = React.useState(null);
+  const [schoolYearId, setSchoolYearId] = React.useState(null);
   const [timetable, setTimetable] = React.useState({});
 
 
   React.useEffect(() => {
-    if (!classId) {
+    if (!classId || !schoolYearId) {
       return;
     }
 
-    fetch(`${apiConfig.baseUrl}/timetables/${settings.schoolYearId}/${classId}`)
+    fetch(`${apiConfig.baseUrl}/timetables/${schoolYearId}/${classId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+    })
       .then(response => {
         if (response.ok && response.status !== 204) {
           return response.json();
@@ -101,7 +119,7 @@ export default function CreateTimetable({ loaderData, actionData }) {
         }
       });
 
-  }, [classId]);
+  }, [classId, schoolYearId]);
 
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
@@ -118,11 +136,16 @@ export default function CreateTimetable({ loaderData, actionData }) {
               </div>
             )}
             <Form method="post">
+              <input type="hidden" name="token" value={token}/>
               <div className="mb-2">
                 <label className="fieldset-label" htmlFor="subjects">Class</label>
                 <ClassSelect classes={classes} onClassChanged={setClassId}/>
               </div>
-              {classId && (
+              <div className="mb-2">
+                <label className="fieldset-label" htmlFor="subjects">School Year & Term</label>
+                <SchoolYearSelect schoolYears={schoolYears} onSchoolYearsChanged={setSchoolYearId}/>
+              </div>
+              {(classId && schoolYearId) && (
                 <div>
                   <div className="overflow-x">
                     <Week subjectsWithTeachers={subjectsWithTeachers} existing={timetable}/>
