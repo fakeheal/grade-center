@@ -18,6 +18,11 @@ export default [
     route(':id/edit', 'routes/authenticated/teachers/edit.jsx'),
   ]),
 
+  ...prefix('school-years', [
+    index('routes/authenticated/school-years/index.jsx'),
+    route('create', 'routes/authenticated/school-years/create.jsx'),
+  ]),
+
   /**
    * Timetable routes
    */

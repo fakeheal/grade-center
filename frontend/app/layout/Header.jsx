@@ -22,7 +22,7 @@ export default () => {
                 user.role === USER_ROLES.ADMINISTRATOR && (
                   <>
                     <li>
-                      <NavLink to="/">School Years</NavLink>
+                      <NavLink to="/school-years">School Years</NavLink>
                     </li>
 
                     <li>

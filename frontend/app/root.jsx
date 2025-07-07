@@ -56,11 +56,11 @@ export async function loader({ request }) {
 
   const user = await response.json();
 
-  return { user };
+  return { user, token };
 }
 
 export function Layout({ children }) {
-  const { user } = useLoaderData() || {};
+  const { user, token } = useLoaderData() || {};
 
   return (
     <html lang="en" data-theme="lofi">
@@ -72,7 +72,7 @@ export function Layout({ children }) {
     </head>
     <body>
     <Header/>
-    {children}
+    <Outlet context={{ user, token }}/>
     <ScrollRestoration/>
     <Scripts/>
     <Footer/>

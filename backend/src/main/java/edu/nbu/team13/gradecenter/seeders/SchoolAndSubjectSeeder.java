@@ -79,6 +79,15 @@ public class SchoolAndSubjectSeeder implements CommandLineRunner {
         schoolDto2.setAddress("бул. Цариградско шосе 7, гр. София, България");
         School school2 = schoolService.create(schoolDto2);
 
+        UserDto adminDto = new UserDto();
+        adminDto.setEmail("georgi.dimitrov@admin.com");
+        adminDto.setPassword("password123");
+        adminDto.setFirstName("Георги");
+        adminDto.setLastName("Димитров");
+        adminDto.setSchoolId(school2.getId());
+        userService.create(adminDto, UserRole.ADMINISTRATOR);
+
+
         ParentDto parentDto = new ParentDto();
         parentDto.setEmail("ivan.ivanov@parent.com");
         parentDto.setPassword("password123");
