@@ -28,7 +28,7 @@ export async function clientAction({ request }) {
 
   if (loginResponse.ok) {
     const token = (await loginResponse.json()).token;
-    document.cookie = `jwt=${token}; Path=/; Secure; SameSite=Strict`;
+    document.cookie = `jwt=${token}; Path=/; SameSite=Strict;`;
     return redirect('/dashboard');
   }
 
