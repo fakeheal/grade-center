@@ -7,6 +7,7 @@ import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.EmailNotAvailable;
 import edu.nbu.team13.gradecenter.exceptions.UserNotFound;
+import edu.nbu.team13.gradecenter.repositories.StudentRepository;
 import edu.nbu.team13.gradecenter.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,18 +15,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     private School school;
 
@@ -35,6 +41,7 @@ public class UserServiceTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+        studentRepository.deleteAll();
 
         SchoolDto schoolDto = new SchoolDto();
         schoolDto.setName("Test School");

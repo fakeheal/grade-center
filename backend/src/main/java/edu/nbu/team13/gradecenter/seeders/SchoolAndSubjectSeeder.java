@@ -9,6 +9,7 @@ import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
+@Profile("!test")
 public class SchoolAndSubjectSeeder implements CommandLineRunner {
     private final SchoolService schoolService;
 

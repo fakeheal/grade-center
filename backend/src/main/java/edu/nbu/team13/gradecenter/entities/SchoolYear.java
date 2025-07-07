@@ -17,7 +17,7 @@ import java.time.Instant;
 @Table(
         name = "school_years",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"year", "term", "school_id"}   // every school can have that year only once
+                columnNames = {"school_year", "term", "school_id"}   // every school can have that year only once
         )
 )
 public class SchoolYear {
@@ -26,7 +26,7 @@ public class SchoolYear {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)           // 2024 means 2024/2025 school year
+    @Column(name = "school_year", nullable = false)          // 2024 means 2024/2025 school year
     private Short year;
 
     @Column(nullable = false)           // 1 or 2

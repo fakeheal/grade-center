@@ -1,20 +1,20 @@
 package edu.nbu.team13.gradecenter.repositories;
 
-import edu.nbu.team13.gradecenter.dtos.SchoolDto;
 import edu.nbu.team13.gradecenter.entities.School;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
-import edu.nbu.team13.gradecenter.services.SchoolService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class UserRepositoryTest {
 
     @Autowired
@@ -23,17 +23,14 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private SchoolService schoolService;
-
     private School school;
 
     @BeforeEach
     void setUp() {
-        SchoolDto schoolDto = new SchoolDto();
-        schoolDto.setName("Test School");
-        schoolDto.setAddress("Test Address");
-        school = schoolService.create(schoolDto);
+        school = new School();
+        school.setName("Test School");
+        school.setAddress("Test Address");
+        entityManager.persistAndFlush(school);
     }
 
     @Test
