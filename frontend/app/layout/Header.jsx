@@ -24,6 +24,8 @@ export default () => {
                                 <NavLink to="/teachers">Teachers</NavLink>
                             </li>
 
+                            {/* 🆕 Parents link */}
+
                             <li>
                                 <NavLink to="/parents">Parents</NavLink>
                             </li>
