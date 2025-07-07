@@ -7,25 +7,25 @@ import {
 } from 'react-router';
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
-import GradeForm from '../../../layout/forms/GradeForm';
-import { validateGrade } from '../../../utilities/validation'; // Assuming you'll create this validation function
+import AbsenceForm from '../../../layout/forms/AbsenceForm';
+import validateAbsence from '../../../utilities/validation';
 
 export async function loader() {
-    const [studentsRes, teachersRes, subjectsRes] = await Promise.all([
+    const [studentsRes, classesRes, subjectsRes] = await Promise.all([
         fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/teachers?schoolId=${settings.schoolId}&size=1000`),
+        fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}&size=1000`),
         fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`),
     ]);
 
     const studentsRaw = (await studentsRes.json()).content ?? [];
-    const teachersRaw = (await teachersRes.json()).content ?? [];
+    const classesRaw = (await classesRes.json()).content ?? [];
     const subjectsRaw = (await subjectsRes.json()) ?? [];
 
     const students = studentsRaw.map(s => ({ id: s.id, firstName: s.firstName, lastName: s.lastName }));
-    const teachers = teachersRaw.map(t => ({ id: t.id, user: { firstName: t.user.firstName, lastName: t.user.lastName } }));
-    const subjects = subjectsRaw.map(sub => ({ id: sub.id, name: sub.name }));
+    const classes = classesRaw.map(c => ({ id: c.id, name: c.name, grade: c.grade }));
+    const subjects = subjectsRaw.map(s => ({ id: s.id, name: s.name }));
 
-    return { students, teachers, subjects };
+    return { students, classes, subjects };
 }
 
 export async function action({ request }) {
@@ -33,40 +33,46 @@ export async function action({ request }) {
 
     const payload = {
         studentId: Number(formData.get('studentId')),
-        teacherId: Number(formData.get('teacherId')),
-        subjectId: Number(formData.get('subjectId')),
-        value: Number(formData.get('value')),
-        date: new Date().toISOString().split('T')[0], // Current date
-        schoolYearId: 1, // TODO: Implement dynamic school year selection
+        classId: Number(formData.get('classId')),
+        subjectId: Number(formData.getAll('subjectIds')[0]),
+        date: formData.get('date'),
+        hour: Number(formData.get('hour')),
+        excused: formData.get('excused') === 'on',
+        reason: formData.get('reason')?.trim() || null,
     };
 
-    const errors = validateGrade(payload, 'CREATE');
+    console.log("Payload:", payload);
+    const errors = validateAbsence(payload);
+    console.log("Validation Errors:", errors);
     if (Object.keys(errors).length) return { errors };
 
-    const res = await fetch(`${apiConfig.baseUrl}/grades`, {
+    const res = await fetch(`${apiConfig.baseUrl}/absences`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-        const msg = (await res.json())?.message ?? 'Failed to add grade.';
+        const msg = (await res.json())?.message ?? 'Failed to add absence.';
         return { errors: { general: msg } };
     }
 
-    return redirect('/grades');
+    return redirect('/absences');
 }
 
-export default function CreateGrade() {
-    const { students, teachers, subjects } = useLoaderData();
+export default function CreateAbsence() {
+    const { students, classes, subjects } = useLoaderData();
     const actionData = useActionData();
     const errors = actionData?.errors ?? {};
 
     const [formData, setFormData] = useState({
         studentId: '',
-        teacherId: '',
-        subjectId: '',
-        value: '',
+        classId: '',
+        subjectIds: [],
+        date: '',
+        hour: '',
+        excused: false,
+        reason: '',
     });
 
     const handleFormChange = (field, value) => {
@@ -75,16 +81,16 @@ export default function CreateGrade() {
 
     return (
         <div className="p-6 max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Add Grade</h1>
+            <h1 className="text-2xl font-bold mb-4">Add Absence</h1>
 
             {errors.general && (
                 <div className="alert alert-error mb-4">{errors.general}</div>
             )}
 
             <Form method="post" replace>
-                <GradeForm
+                <AbsenceForm
                     students={students}
-                    teachers={teachers}
+                    classes={classes}
                     subjects={subjects}
                     errors={errors}
                     formData={formData}

@@ -1,5 +1,20 @@
-import { Link, useLoaderData } from 'react-router';
+import { Link, useLoaderData, Form, redirect, useNavigation } from 'react-router';
 import apiConfig from '../../../api.config';
+import { Trash2, Edit } from 'lucide-react';
+
+export async function action({ request }) {
+    const formData = await request.formData();
+    const id = formData.get('deleteId');
+
+    const res = await fetch(`${apiConfig.baseUrl}/grades/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (!res.ok)
+        return { error: 'Delete failed.' };
+
+    return redirect('/grades');
+}
 
 export function meta() {
     return [
@@ -54,7 +69,35 @@ export default function GradesIndex() {
                                     <td>{grade.date}</td>
                                     <td>{grade.teacher.firstName} {grade.teacher.lastName}</td>
                                     <td>
-                                        {/* Add Edit/Delete buttons here if needed */}
+                                        <div className="flex gap-2 justify-start">
+                                            <Link
+                                                to={`/grades/${grade.id}/edit`}
+                                                className="btn btn-sm btn-outline"
+                                                title="Edit"
+                                            >
+                                                <Edit size={16} />
+                                            </Link>
+                                            <Form method="post" className="inline">
+                                                <input type="hidden" name="deleteId" value={grade.id} />
+                                                <button
+                                                    type="submit"
+                                                    className="btn btn-sm btn-error"
+                                                    title="Delete"
+                                                    disabled={useNavigation().state === 'submitting'}
+                                                    onClick={(e) => {
+                                                        if (
+                                                            !window.confirm(
+                                                                `Delete grade for ${grade.student.firstName} ${grade.student.lastName} on ${grade.subject.name}?`
+                                                            )
+                                                        ) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </Form>
+                                        </div>
                                     </td>
                                 </tr>
                             ))

@@ -1,6 +1,5 @@
 package edu.nbu.team13.gradecenter.entities;
 
-import edu.nbu.team13.gradecenter.dtos.AbsenceDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -12,55 +11,31 @@ import java.time.LocalDate;
 @Data
 @Table(name = "absences")
 public class Absence {
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
-    @Getter
-    @Setter
-    @Column(name = "student_id", nullable = false)
-    private Long studentId;
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-    @Getter
-    @Setter
-    @Column(name = "teacher_id", nullable = false)
-    private Long teacherId;
+    @ManyToOne
+    @JoinColumn(name = "class_id", nullable = false)
+    private Class classEntity;
 
-    @Getter
-    @Setter
-    @Column(name = "subject_id", nullable = false)
-    private Long subjectId;
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
 
-    @Getter
-    @Setter
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Getter
-    @Setter
-    @Column(name = "school_year_id", nullable = false)
-    private Long schoolYearId;
+    @Column(name = "hour", nullable = false)
+    private Integer hour;
 
-    @Getter
-    @Setter
-    @Column(name = "reason", nullable = false)
-    private String reason;
-
-    @Getter
-    @Setter
     @Column(name = "excused", nullable = false)
     private Boolean excused;
 
-    public Absence() {}
-    public void FromDto(AbsenceDto dto){
-        this.date = dto.getDate();
-        this.studentId = dto.getStudentId();
-        this.teacherId = dto.getTeacherId();
-        this.subjectId = dto.getSubjectId();
-        this.schoolYearId = dto.getSchoolYearId();
-        this.reason = dto.getReason();
-        this.excused = dto.getExcused();
-
-    }
+    @Column(name = "reason")
+    private String reason;
 }

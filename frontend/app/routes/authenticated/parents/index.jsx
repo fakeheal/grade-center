@@ -175,7 +175,7 @@ export default function ParentsIndex() {
 									{selectedParentStudents.map((student) => (
 										<tr key={student.id}>
 											<td>
-												{student.firstName} {student.lastName}
+												{student.firstName ?? student.user?.firstName} {student.lastName ?? student.user?.lastName}
 											</td>
 											<td>{student.email}</td>
 										</tr>

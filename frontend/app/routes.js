@@ -52,5 +52,12 @@ export default [
   ...prefix('grades', [
     index('routes/authenticated/grades/index.jsx'),
     route('create', 'routes/authenticated/grades/create.jsx'),
+    route(':id/edit', 'routes/authenticated/grades/edit.jsx'),
+  ]),
+  ...prefix('absences', [
+    index('routes/authenticated/absences/index.jsx'),
+    route('create', 'routes/authenticated/absences/create.jsx'),
+    route(':id/edit', 'routes/authenticated/absences/edit.jsx'),
+    
   ]),
 ];

@@ -30,6 +30,11 @@ public class GradeService {
         this.subjectRepository = subjectRepository;
     }
 
+    public Grade findById(Long id) {
+        return gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+    }
+
     @Transactional
     public Grade create(GradeDto gradeDto) {
         Grade grade = new Grade();
@@ -42,24 +47,62 @@ public class GradeService {
         return gradeRepository.save(grade);
     }
 
+    @Transactional
+    public Grade update(Long id, GradeDto gradeDto) {
+        Grade existingGrade = gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+
+        existingGrade.setStudentId(gradeDto.getStudentId());
+        existingGrade.setTeacherId(gradeDto.getTeacherId());
+        existingGrade.setSubjectId(gradeDto.getSubjectId());
+        existingGrade.setValue(gradeDto.getValue());
+        existingGrade.setDate(gradeDto.getDate());
+        existingGrade.setSchoolYearId(gradeDto.getSchoolYearId());
+
+        return gradeRepository.save(existingGrade);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Grade existingGrade = gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+        gradeRepository.delete(existingGrade);
+    }
+
     public List<GradeResponseDto> findAll() {
         return gradeRepository.findAll().stream()
-                .map(grade -> {
-                    GradeResponseDto dto = new GradeResponseDto(grade);
-                    // Populate full student, teacher, subject details
-                    studentRepository.findById(grade.getStudentId()).ifPresent(s -> {
-                        dto.getStudent().setFirstName(s.getUser().getFirstName());
-                        dto.getStudent().setLastName(s.getUser().getLastName());
-                    });
-                    teacherRepository.findById(grade.getTeacherId()).ifPresent(t -> {
-                        dto.getTeacher().setFirstName(t.getUser().getFirstName());
-                        dto.getTeacher().setLastName(t.getUser().getLastName());
-                    });
-                    subjectRepository.findById(grade.getSubjectId()).ifPresent(sub -> {
-                        dto.getSubject().setName(sub.getName());
-                    });
-                    return dto;
-                })
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<GradeResponseDto> findByStudentId(Long studentId) {
+        return gradeRepository.findByStudentId(studentId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private GradeResponseDto convertToDto(Grade grade) {
+        GradeResponseDto dto = new GradeResponseDto(grade);
+
+        studentRepository.findById(grade.getStudentId()).ifPresent(s -> {
+            GradeResponseDto.StudentResponseDto studentDto = new GradeResponseDto.StudentResponseDto(s.getId());
+            studentDto.setFirstName(s.getUser().getFirstName());
+            studentDto.setLastName(s.getUser().getLastName());
+            dto.setStudent(studentDto);
+        });
+
+        teacherRepository.findById(grade.getTeacherId()).ifPresent(t -> {
+            GradeResponseDto.TeacherResponseDto teacherDto = new GradeResponseDto.TeacherResponseDto(t.getId());
+            teacherDto.setFirstName(t.getUser().getFirstName());
+            teacherDto.setLastName(t.getUser().getLastName());
+            dto.setTeacher(teacherDto);
+        });
+
+        subjectRepository.findById(grade.getSubjectId()).ifPresent(sub -> {
+            GradeResponseDto.SubjectResponseDto subjectDto = new GradeResponseDto.SubjectResponseDto(sub.getId());
+            subjectDto.setName(sub.getName());
+            dto.setSubject(subjectDto);
+        });
+        return dto;
     }
 }

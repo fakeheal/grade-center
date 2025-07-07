@@ -34,8 +34,6 @@ export function validateTeacher(
   }
   if (!email) {
     errors.email = 'Email is required';
-  } else if (!validateEmail(email)) {
-    errors.email = 'Email is invalid';
   }
   if (!password && mode === TEACHER_MODE.CREATE) {
     errors.password = 'Password is required';
@@ -109,7 +107,8 @@ export function validateParent(data, mode = 'CREATE') {
     if (!data.password) errors.password = 'Password is required.';
     if (data.password !== data.repeatPassword)
       errors.repeatPassword = 'Passwords do not match.';
-  } else if (mode === 'EDIT' && data.password) {
+  }
+  else if (mode === 'EDIT' && data.password) {
     if (data.password !== data.repeatPassword)
       errors.repeatPassword = 'Passwords do not match.';
   }
@@ -134,7 +133,8 @@ export function validateStudent(data, mode = 'CREATE') {
     if (!data.password) errors.password = 'Password is required.';
     if (data.password !== data.repeatPassword)
       errors.repeatPassword = 'Passwords do not match.';
-  } else if (mode === 'EDIT' && data.password) {
+  }
+  else if (mode === 'EDIT' && data.password) {
     if (data.password !== data.repeatPassword)
       errors.repeatPassword = 'Passwords do not match.';
   }
@@ -156,11 +156,24 @@ export function validateGrade(data) {
 
   if (data.value === null || data.value === undefined || data.value === '') {
     errors.value = 'Grade value is required.';
-  } else if (isNaN(data.value) || data.value < 1 || data.value > 6) {
+  }
+  if (isNaN(data.value) || data.value < 1 || data.value > 6) {
     errors.value = 'Grade value must be between 1 and 6.';
   }
 
   if (!data.date) errors.date = 'Date is required.';
+
+  return errors;
+}
+
+export default function validateAbsence(data) {
+  const errors = {};
+
+  if (!data.studentId) errors.studentId = 'Student is required.';
+  if (!data.classId) errors.classId = 'Class is required.';
+  if (!data.subjectId) errors.subjectId = 'Subject is required.';
+  if (!data.date) errors.date = 'Date is required.';
+  if (!data.hour) errors.hour = 'Hour is required.';
 
   return errors;
 }

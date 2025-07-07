@@ -89,6 +89,8 @@ export default function CreateTimetable({ loaderData, actionData }) {
       return;
     }
 
+    setTimetable({});
+
     fetch(`${apiConfig.baseUrl}/timetables/${settings.schoolYearId}/${classId}`)
       .then(response => {
         if (response.ok && response.status !== 204) {

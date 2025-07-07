@@ -127,6 +127,7 @@ public class SchoolAndSubjectSeeder implements CommandLineRunner {
         teacherDto.setPassword("password321");
         teacherDto.setFirstName("Вяра");
         teacherDto.setLastName("Нестерова");
+        teacherDto.setGrade(10L); // Assign a default grade
         TeacherDto teacher = teacherService.create(teacherDto);
 
         SchoolYearDto schoolYear = new SchoolYearDto();

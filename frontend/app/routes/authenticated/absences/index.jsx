@@ -1,0 +1,87 @@
+import { Link, useLoaderData, Form, redirect } from 'react-router';
+import apiConfig from '../../../api.config';
+
+export function meta() {
+    return [
+        { title: 'Absences - Grade Center' },
+        { name: 'description', content: 'Manage student absences.' },
+    ];
+}
+
+export async function loader() {
+    const res = await fetch(`${apiConfig.baseUrl}/absences`);
+    if (!res.ok) throw new Response('Failed to load absences', { status: 500 });
+    return await res.json();
+}
+
+export async function action({ request }) {
+    const formData = await request.formData();
+    const id = formData.get('deleteId');
+    const res = await fetch(`${apiConfig.baseUrl}/absences/${id}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) {
+        throw new Response('Failed to delete absence', { status: 500 });
+    }
+    return redirect('/absences');
+}
+
+export default function AbsencesIndex() {
+    const absences = useLoaderData();
+
+    return (
+        <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">Absences</h1>
+                <Link to="/absences/create" className="btn btn-primary">
+                    + Add Absence
+                </Link>
+            </div>
+
+            <div className="overflow-x-auto shadow rounded">
+                <table className="table w-full">
+                    <thead>
+                        <tr className="bg-base-200">
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Hour</th>
+                            <th>Excused</th>
+                            <th>Reason</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {absences.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center py-8">
+                                    No absences found.
+                                </td>
+                            </tr>
+                        ) : (
+                            absences.map((absence) => (
+                                <tr key={absence.id} className="hover">
+                                    <td>{absence.student.firstName} {absence.student.lastName}</td>
+                                    <td>{absence.classEntity.name} - {absence.classEntity.grade}</td>
+                                    <td>{absence.subject.name}</td>
+                                    <td>{absence.date}</td>
+                                    <td>{absence.hour}</td>
+                                    <td>{absence.excused ? 'Yes' : 'No'}</td>
+                                    <td>{absence.reason || '-'}</td>
+                                    <td>
+                                        <Link to={`${absence.id}/edit`} className="btn btn-xs btn-outline">edit</Link>
+                                        <Form method="post" className="inline-block ml-2">
+                                            <input type="hidden" name="deleteId" value={absence.id} />
+                                            <button type="submit" className="btn btn-xs btn-outline btn-error">delete</button>
+                                        </Form>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}

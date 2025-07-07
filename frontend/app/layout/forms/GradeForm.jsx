@@ -1,6 +1,6 @@
 import React from 'react';
 import SubjectSelect from '../forms/components/SubjectSelect';
-import StudentSelect from '../forms/components/StudentSelect';
+import SingleStudentSelect from '../forms/components/SingleStudentSelect';
 import TeacherSelect from '../forms/components/TeacherSelect'; // Assuming you'll create this
 
 export default function GradeForm({
@@ -15,12 +15,11 @@ export default function GradeForm({
         <>
             <div className="mb-2">
                 <label className="fieldset-label" htmlFor="studentId">Student</label>
-                <StudentSelect
+                <SingleStudentSelect
                     students={students}
-                    selectedIds={formData.studentId ? [formData.studentId] : []}
-                    onSelectionChange={(ids) => onFormChange('studentId', ids[0] || '')}
-                    errors={errors}
-                    singleSelect={true}
+                    selectedId={formData.studentId}
+                    onSelectionChange={(id) => onFormChange('studentId', id)}
+                    error={errors?.studentId}
                 />
                 {errors?.studentId &&
                     <p className="text-error text-xs mt-1">{errors.studentId}</p>}
@@ -57,12 +56,12 @@ export default function GradeForm({
                 <input
                     type="number"
                     className={`input w-full ${errors?.value ? `input-error` : ``}`}
-                    placeholder="Enter grade value (1-6)"
+                    placeholder="Enter grade value (2-6)"
                     name="value"
                     value={formData.value}
                     onChange={(e) => onFormChange('value', e.target.value)}
                     id="value"
-                    min="1"
+                    min="2"
                     max="6"
                     step="0.01"
                 />

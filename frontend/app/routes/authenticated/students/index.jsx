@@ -7,7 +7,8 @@ import {
     useSearchParams,
 } from 'react-router';
 import apiConfig from '../../../api.config';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit, BookOpen } from 'lucide-react';
+import { useState } from 'react';
 
 export function meta() {
   return [
@@ -48,6 +49,30 @@ export default function StudentsIndex() {
     const [searchParams] = useSearchParams();
     const page = Number(searchParams.get('page') || 0);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedStudentGrades, setSelectedStudentGrades] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleViewGrades = async (studentId) => {
+        setIsModalOpen(true);
+        setIsLoading(true);
+        try {
+            const res = await fetch(
+                `${apiConfig.baseUrl}/grades?studentId=${studentId}`
+            );
+            if (!res.ok) {
+                throw new Error('Failed to fetch grades');
+            }
+            const grades = await res.json();
+            setSelectedStudentGrades(grades);
+        } catch (error) {
+            console.error(error);
+            // Handle error display to the user
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-4">
@@ -76,6 +101,13 @@ export default function StudentsIndex() {
                                 <td>{s.lastName}</td>
                                 <td>{s.email}</td>
                                 <td className="flex gap-2 justify-center">
+                                    <button
+                                        onClick={() => handleViewGrades(s.id)}
+                                        className="btn btn-sm btn-outline"
+                                        title="View Grades"
+                                    >
+                                        <BookOpen size={16} />
+                                    </button>
                                     <Link
                                         to={`${s.id}/edit`}
                                         className="btn btn-sm btn-outline"
@@ -130,6 +162,48 @@ export default function StudentsIndex() {
                             {i + 1}
                         </Link>
                     ))}
+                </div>
+            )}
+
+            {isModalOpen && (
+                <div className="modal modal-open">
+                    <div className="modal-box">
+                        <h3 className="font-bold text-lg">Grades</h3>
+                        {isLoading ? (
+                            <p>Loading...</p>
+                        ) : selectedStudentGrades.length > 0 ? (
+                            <table className="table w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Value</th>
+                                        <th>Teacher</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedStudentGrades.map((grade) => (
+                                        <tr key={grade.id}>
+                                            <td>{grade.subject.name}</td>
+                                            <td>{grade.value}</td>
+                                            <td>{grade.teacher.firstName} {grade.teacher.lastName}</td>
+                                            <td>{grade.date}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p>No grades found for this student.</p>
+                        )}
+                        <div className="modal-action">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="btn"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
