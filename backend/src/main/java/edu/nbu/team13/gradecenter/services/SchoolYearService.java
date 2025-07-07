@@ -35,7 +35,7 @@ public class SchoolYearService {
     public SchoolYear update(Long id, SchoolYearDto dto) {
         validate(dto);
 
-        SchoolYear sy = repo.findById(id).orElseThrow(() -> new SchoolYearNotFound(id));
+        SchoolYear sy = this.findById(id);
 
         boolean changingKey =
                 sy.getYear()     != dto.getYear()  ||
@@ -77,5 +77,9 @@ public class SchoolYearService {
         sy.setTerm(d.getTerm());
         sy.setSchoolId(d.getSchoolId());
         return sy;
+    }
+
+    public SchoolYear findById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new SchoolYearNotFound(id));
     }
 }

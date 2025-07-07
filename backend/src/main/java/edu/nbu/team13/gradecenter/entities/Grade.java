@@ -43,4 +43,14 @@ public class Grade {
     @Setter
     @Column(name = "school_year_id", nullable = false)
     private Long schoolYearId;
+
+    public Grade() {}
+    public void FromDto(edu.nbu.team13.gradecenter.dtos.GradeDto dto){
+        this.date = dto.getDate();
+        this.studentId = dto.getStudentId();
+        this.teacherId = dto.getTeacherId();
+        this.subjectId = dto.getSubjectId();
+        this.schoolYearId = dto.getSchoolYearId();
+        this.value = dto.getValue();
+    }
 }
