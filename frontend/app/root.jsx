@@ -3,6 +3,7 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, 
 import stylesheet from './app.css?url';
 import Footer from './layout/Footer';
 import Header from './layout/Header';
+import UserProvider from './state/user';
 
 export const links = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -19,8 +20,6 @@ export const links = () => [
 ];
 
 export function Layout({ children }) {
-  // dummy variables for changing the layout of the prototype
-
   return (
     <html lang="en" data-theme="lofi">
     <head>
@@ -30,11 +29,13 @@ export function Layout({ children }) {
       <Links/>
     </head>
     <body>
-    <Header/>
-    {children}
-    <ScrollRestoration/>
-    <Scripts/>
-    <Footer/>
+    <UserProvider>
+      <Header/>
+      {children}
+      <ScrollRestoration/>
+      <Scripts/>
+      <Footer/>
+    </UserProvider>
     </body>
     </html>
   );
