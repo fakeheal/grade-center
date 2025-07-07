@@ -6,6 +6,7 @@ import Week from '../../../layout/forms/components/timetable/Week';
 import { parseFormDataIntoTimetable } from '../../../utilities/timetable';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
 import React from 'react';
+import { extractJwtToken } from '../../../utilities/user';
 
 
 export function meta() {
@@ -15,11 +16,35 @@ export function meta() {
   ];
 }
 
-export async function loader() {
-  const classesRequest = await fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}`);
+export async function loader({ request }) {
+  const cookie = request.headers.get('cookie');
+  const token = extractJwtToken(cookie);
+  const userRequest = await fetch(`${apiConfig.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const userResponse = await userRequest.json();
+
+  const classesRequest = await fetch(`${apiConfig.baseUrl}/classes?schoolId=${userResponse.school.id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   const classesResponse = await classesRequest.json();
 
-  const subjectsWithTeachersRequest = await fetch(`${apiConfig.baseUrl}/subjects/teachers/${settings.schoolId}`);
+  const subjectsWithTeachersRequest = await fetch(`${apiConfig.baseUrl}/subjects/teachers/${userResponse.school.id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
   const subjectsWithTeachersResponse = await subjectsWithTeachersRequest.json();
   return {
     classes: classesResponse.content,
@@ -56,8 +81,8 @@ export default function CreateTimetable({ loaderData, actionData }) {
   const { errors, success } = actionData || {};
 
   const [classId, setClassId] = React.useState(null);
-
   const [timetable, setTimetable] = React.useState({});
+
 
   React.useEffect(() => {
     if (!classId) {

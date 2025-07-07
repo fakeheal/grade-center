@@ -1,9 +1,20 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, } from 'react-router';
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  redirect,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+} from 'react-router';
 
 import stylesheet from './app.css?url';
 import Footer from './layout/Footer';
 import Header from './layout/Header';
-import UserProvider from './state/user';
+import apiConfig from './api.config';
+import { extractJwtToken } from './utilities/user';
+import React from 'react';
 
 export const links = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -19,7 +30,38 @@ export const links = () => [
   { rel: 'stylesheet', href: stylesheet },
 ];
 
+export async function loader({ request }) {
+  if (request.url.endsWith('/login')) {
+    return;
+  }
+
+  const cookie = request.headers.get('cookie');
+  const token = extractJwtToken(cookie);
+
+  if (!token) {
+    return redirect('/login');
+  }
+
+  const response = await fetch(`${apiConfig.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return redirect('/login');
+  }
+
+  const user = await response.json();
+
+  return { user };
+}
+
 export function Layout({ children }) {
+  const { user } = useLoaderData() || {};
+
   return (
     <html lang="en" data-theme="lofi">
     <head>
@@ -29,13 +71,11 @@ export function Layout({ children }) {
       <Links/>
     </head>
     <body>
-    <UserProvider>
-      <Header/>
-      {children}
-      <ScrollRestoration/>
-      <Scripts/>
-      <Footer/>
-    </UserProvider>
+    <Header/>
+    {children}
+    <ScrollRestoration/>
+    <Scripts/>
+    <Footer/>
     </body>
     </html>
   );

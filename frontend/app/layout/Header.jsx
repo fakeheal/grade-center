@@ -1,10 +1,9 @@
 import React from 'react';
-import { NavLink } from 'react-router';
-import { UserContext } from '../state/user';
+import { NavLink, useLoaderData, useRouteLoaderData } from 'react-router';
+import { USER_ROLES } from '../utilities/user';
 
 export default () => {
-  const { user: { loggedIn } } = React.useContext(UserContext);
-
+  const { user } = useRouteLoaderData('root') || {};
 
   return (
     <div className="navbar bg-base-100 border-b border-base-300/70">
@@ -14,32 +13,42 @@ export default () => {
 
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
-          {loggedIn ? (
+          {user?.id ? (
             <>
               <li>
                 <NavLink to="/dashboard">Dashboard</NavLink>
               </li>
-              <li>
-                <NavLink to="/timetables">Timetables</NavLink>
-              </li>
-              <li>
-                <NavLink to="/students">Students</NavLink>
-              </li>
-              <li>
-                <NavLink to="/teachers">Teachers</NavLink>
-              </li>
+              {
+                user.role === USER_ROLES.ADMINISTRATOR && (
+                  <>
+                    <li>
+                      <NavLink to="/">School Years</NavLink>
+                    </li>
 
-              {/* 🆕 Parents link */}
+                    <li>
+                      <NavLink to="/students">Students</NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/teachers">Teachers</NavLink>
+                    </li>
 
-              <li>
-                <NavLink to="/parents">Parents</NavLink>
-              </li>
+                    <li>
+                      <NavLink to="/parents">Parents</NavLink>
+                    </li>
 
+                  </>
+                )
+              }
               <li>
-                <NavLink to="/school/edit">School</NavLink>
+                <NavLink to="/timetables">Timetable</NavLink>
               </li>
+              {user.role === USER_ROLES.DIRECTOR && (
+                <li>
+                  <NavLink to="/school/edit">School</NavLink>
+                </li>
+              )}
               <li>
-                <NavLink to="/">Settings</NavLink>
+                <NavLink to="/logout">Logout</NavLink>
               </li>
             </>
           ) : (

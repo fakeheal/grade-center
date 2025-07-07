@@ -27,9 +27,8 @@ export async function clientAction({ request }) {
   });
 
   if (loginResponse.ok) {
-
-    localStorage.setItem('token', (await loginResponse.json()).token);
-
+    const token = (await loginResponse.json()).token;
+    document.cookie = `jwt=${token}; Path=/; Secure; SameSite=Strict`;
     return redirect('/dashboard');
   }
 
