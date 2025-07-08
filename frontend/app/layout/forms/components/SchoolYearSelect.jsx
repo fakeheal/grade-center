@@ -1,4 +1,5 @@
 export default function SchoolYearSelect({ schoolYears, onSchoolYearsChanged }) {
+
     return (
         <select name="schoolYearId" id="schoolYearId" className={`mt-0.5 select w-full`}
                 onChange={(e) => onSchoolYearsChanged(e.target.value)}>
@@ -11,3 +12,4 @@ export default function SchoolYearSelect({ schoolYears, onSchoolYearsChanged }) 
         </select>
     );
 }
+

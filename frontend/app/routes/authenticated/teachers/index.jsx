@@ -1,4 +1,5 @@
 import apiConfig from '../../../api.config';
+
 import React from 'react';
 import { Link, redirect, Form, useNavigation, useOutletContext } from 'react-router';
 import { Trash2 } from 'lucide-react';
@@ -21,6 +22,7 @@ export async function action({ request }) {
   return redirect('/teachers');
 }
 
+
 export function meta() {
   return [
     { title: 'Teachers - Grade Center' },
@@ -29,17 +31,16 @@ export function meta() {
 }
 
 export async function loader({ request }) {
+
   const token = getJwt(request.headers.get('cookie'));
   const page = (new URL(request.url)).searchParams.get('page') || 0;
   const response = await fetch(`${apiConfig.baseUrl}/teachers`, { headers: { Authorization: `Bearer ${token}` } });
+
   return await response.json();
 }
 
-export function HydrateFallback() {
-  return <div>Loading...</div>;
-}
-
 export default function Index({ loaderData }) {
+
   const { token: ctxToken } = useOutletContext() ?? {};
   const token = ctxToken || getJwt(document?.cookie);
   const navigation = useNavigation();

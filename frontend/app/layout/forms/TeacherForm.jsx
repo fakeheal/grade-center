@@ -4,7 +4,9 @@ import UserFields from "./components/UserFields.jsx";
 import SchoolSelect from "./components/SchoolSelect.jsx";
 import SubjectSelect from "./components/SubjectSelect.jsx";
 
+
 export default function TeacherForm({ teacher, subjects, schools, errors }) {
+
   const [firstName, setFirstName] = React.useState(teacher?.firstName || '');
   const [lastName, setLastName] = React.useState(teacher?.lastName || '');
   const [email, setEmail] = React.useState(teacher?.email || '');
@@ -13,10 +15,11 @@ export default function TeacherForm({ teacher, subjects, schools, errors }) {
   const [subjectIds, setSubjectIds] = React.useState(teacher?.subjects?.map(subject => subject.id) || []);
   const [schoolId, setSchoolId] = React.useState(teacher?.schoolId || '');
 
-
   return (
     <Form method="post">
       <fieldset className="fieldset">
+        <input type="hidden" name="token" value={token}/>
+        <input type="hidden" name="schoolId" value={schoolId}/>
         <UserFields
           values={{ firstName, lastName, email, password, repeatPassword }}
           errors={errors}
@@ -32,11 +35,13 @@ export default function TeacherForm({ teacher, subjects, schools, errors }) {
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="subjects">Subjects</label>
           <SubjectSelect
+
             subjects={subjects}
             errors={errors}
             selectedIds={subjectIds}
             onSelectionChange={setSubjectIds}
             singleSelect={false}
+
           />
           {errors?.subjects &&
             <p className="text-error text-xs mt-1">{errors.subjects}</p>}

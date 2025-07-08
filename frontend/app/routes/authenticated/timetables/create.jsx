@@ -102,6 +102,7 @@ export default function CreateTimetable({ loaderData, actionData }) {
       return;
     }
 
+
     fetch(`${apiConfig.baseUrl}/timetables/${schoolYearId}/${classId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -119,9 +120,11 @@ export default function CreateTimetable({ loaderData, actionData }) {
           }
         });
 
+
   }, [classId, schoolYearId]);
 
   return (
+
       <div className="bg-base-100 text-base-content py-10 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="card mx-auto bg-base-100 w-full shrink-0 shadow-2xl">
@@ -133,6 +136,7 @@ export default function CreateTimetable({ loaderData, actionData }) {
                   <div role="alert" className="alert alert-error">
                     <ErrorIcon/>
                     <span>{errors.general}</span>
+
                   </div>
               )}
               <Form method="post">

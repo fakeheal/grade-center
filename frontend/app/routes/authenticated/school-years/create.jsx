@@ -10,7 +10,7 @@ export function meta() {
   ];
 }
 
-const YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2033, 2034, 2035];
+const YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2034, 2033, 2035, 2036];
 const TERMS = [1, 2];
 
 export default function Create({}) {
@@ -50,7 +50,7 @@ export default function Create({}) {
     })
       .then(response => {
         if (!response.ok) {
-          setError('Failed to create school year');
+          throw new Error('Failed to create school year. Check your permissions.');
         }
         return response.json();
       })

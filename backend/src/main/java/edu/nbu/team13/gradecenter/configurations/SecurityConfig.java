@@ -1,5 +1,6 @@
 package edu.nbu.team13.gradecenter.configurations;
 
+import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.services.UserService;
 import edu.nbu.team13.gradecenter.utilities.JWTUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/users/login").permitAll()
+                                .requestMatchers("/school-years").hasRole(UserRole.ADMINISTRATOR.name())
+                                .requestMatchers("/school-years/**").hasRole(UserRole.ADMINISTRATOR.name())
                                 .anyRequest()
                                 .authenticated()
                 )
