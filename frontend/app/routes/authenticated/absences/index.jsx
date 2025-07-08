@@ -1,5 +1,7 @@
 import { Link, useLoaderData, Form, redirect } from 'react-router';
 import apiConfig from '../../../api.config';
+import { Trash2, Edit } from 'lucide-react';
+import { getJwt } from '../../../utilities/auth';
 
 export function meta() {
     return [
@@ -8,8 +10,9 @@ export function meta() {
     ];
 }
 
-export async function loader() {
-    const res = await fetch(`${apiConfig.baseUrl}/absences`);
+export async function loader({ request }) {
+    const token = getJwt(request.headers.get('cookie'));
+    const res = await fetch(`${apiConfig.baseUrl}/absences`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Response('Failed to load absences', { status: 500 });
     return await res.json();
 }
@@ -17,8 +20,10 @@ export async function loader() {
 export async function action({ request }) {
     const formData = await request.formData();
     const id = formData.get('deleteId');
+    const token = getJwt(request.headers.get('cookie'));
     const res = await fetch(`${apiConfig.baseUrl}/absences/${id}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) {
         throw new Response('Failed to delete absence', { status: 500 });

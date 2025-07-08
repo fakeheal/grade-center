@@ -9,18 +9,19 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import StudentForm from '../../../layout/forms/StudentForm';
 import { validateStudent } from '../../../utilities/validation'; // Assuming you'll create this validation function
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader() {
+export async function loader({ request }) {
     // 1) get all parents for this school
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const parentsRes = await fetch(
-        `${apiConfig.baseUrl}/parents?schoolId=${settings.schoolId}&size=1000`
+        `${apiConfig.baseUrl}/parents?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }
     );
     const parentsRaw = (await parentsRes.json()).content ?? [];
 
-    const parents = parentsRaw;
-
-    return parents;
+    return parentsRaw;
 }
+
 
 export async function action({ request }) {
     const formData = await request.formData();
@@ -39,10 +40,12 @@ export async function action({ request }) {
 
     const errors = validateStudent(payload, 'CREATE');
     if (Object.keys(errors).length) return { errors };
-
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/students`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

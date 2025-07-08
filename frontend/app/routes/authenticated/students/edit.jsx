@@ -1,18 +1,21 @@
-import { Form, redirect, useActionData, useLoaderData, useParams } from 'react-router';
+import { Form, redirect, useActionData, useLoaderData } from 'react-router';
 import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import StudentForm from '../../../layout/forms/StudentForm';
 import { validateStudent } from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader({ params }) {
+export async function loader({ request, params }) {
     // fetch student
-    const studentRes = await fetch(`${apiConfig.baseUrl}/students/${params.id}`);
+    const token = getJwt(request.headers.get('cookie') ?? '');
+    const studentRes = await fetch(`${apiConfig.baseUrl}/students/${params.id}`,{ headers: { Authorization: `Bearer ${token}` } });
+
     if (!studentRes.ok) throw new Response('Student not found', { status: 404 });
     const student = await studentRes.json();
 
     // fetch parents
     const parentsRes = await fetch(
-        `${apiConfig.baseUrl}/parents?schoolId=${settings.schoolId}&size=1000`
+        `${apiConfig.baseUrl}/parents?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }
     );
     const parentsRaw = (await parentsRes.json()).content ?? [];
     const parents = parentsRaw;
@@ -37,10 +40,12 @@ export async function action({ request, params }) {
 
     const errors = validateStudent(payload, 'EDIT');
     if (Object.keys(errors).length) return { errors };
-
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/students/${params.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization : `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 
@@ -54,6 +59,7 @@ export async function action({ request, params }) {
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
+
 
 export default function EditStudent() {
     const { student, parents } = useLoaderData();

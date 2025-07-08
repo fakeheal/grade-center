@@ -1,13 +1,17 @@
-import { Link, useLoaderData, Form, redirect, useNavigation } from 'react-router';
+import { Link, useLoaderData, Form, redirect, useNavigation, useOutletContext } from 'react-router';
 import apiConfig from '../../../api.config';
 import { Trash2, Edit } from 'lucide-react';
+import { getJwt } from '../../../utilities/auth';
 
 export async function action({ request }) {
     const formData = await request.formData();
     const id = formData.get('deleteId');
 
+    const token = getJwt(request.headers.get('cookie'));
+
     const res = await fetch(`${apiConfig.baseUrl}/grades/${id}`, {
         method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!res.ok)
@@ -23,14 +27,16 @@ export function meta() {
     ];
 }
 
-export async function loader() {
-    const res = await fetch(`${apiConfig.baseUrl}/grades`);
+export async function loader({ request }) {
+    const token = getJwt(request.headers.get('cookie'));
+    const res = await fetch(`${apiConfig.baseUrl}/grades`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Response('Failed to load grades', { status: 500 });
     return await res.json();
 }
 
 export default function GradesIndex() {
     const grades = useLoaderData();
+    const navigation = useNavigation();
 
     return (
         <div className="p-6">
@@ -83,7 +89,7 @@ export default function GradesIndex() {
                                                     type="submit"
                                                     className="btn btn-sm btn-error"
                                                     title="Delete"
-                                                    disabled={useNavigation().state === 'submitting'}
+                                                    disabled={navigation.state === 'submitting'}
                                                     onClick={(e) => {
                                                         if (
                                                             !window.confirm(

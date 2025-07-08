@@ -5,6 +5,7 @@ import settings from '../../../settings';
 import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
 import { Link, redirect } from 'react-router';
 import TeacherDelete from '../../../layout/forms/TeacherDelete';
+import { getJwt } from '../../../utilities/auth';
 
 export function meta() {
   return [
@@ -14,19 +15,21 @@ export function meta() {
 }
 
 export async function loader({ request, params }) {
-  const getSubjectsRequest = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
+  const token = getJwt(request.headers.get('cookie') ?? '');
+  const getSubjectsRequest = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`, { headers: { Authorization: `Bearer ${token}` } });
   const subjects = await getSubjectsRequest.json();
 
-  const getTeacherRequest = await fetch(`${apiConfig.baseUrl}/teachers/${params.id}`);
+  const getTeacherRequest = await fetch(`${apiConfig.baseUrl}/teachers/${params.id}`, { headers: { Authorization: `Bearer ${token}` } });
   const teacher = await getTeacherRequest.json();
 
-  const getSchoolsRequest = await fetch(`${apiConfig.baseUrl}/schools`);
+  const getSchoolsRequest = await fetch(`${apiConfig.baseUrl}/schools`, { headers: { Authorization: `Bearer ${token}` } });
   const schools = await getSchoolsRequest.json();
 
   return { subjects, teacher, schools: schools.content };
 }
 
 export async function action({ request, params }) {
+  const token = getJwt(request.headers.get('cookie') ?? '');
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -57,6 +60,7 @@ export async function action({ request, params }) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       firstName,

@@ -4,6 +4,7 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import AbsenceForm from '../../../layout/forms/AbsenceForm';
 import validateAbsence from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
 export function meta() {
     return [
@@ -12,15 +13,16 @@ export function meta() {
     ];
 }
 
-export async function loader({ params }) {
+export async function loader({ request, params }) {
+    const token = getJwt(request.headers.get('cookie') ?? '');
     console.log("Fetching absence for ID:", params.id);
     const absenceUrl = `${apiConfig.baseUrl}/absences/${params.id}`;
     console.log("Absence fetch URL:", absenceUrl);
     const [absenceRes, studentsRes, classesRes, subjectsRes] = await Promise.all([
-        fetch(absenceUrl),
-        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`),
+        fetch(absenceUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     if (!absenceRes.ok) throw new Response('Failed to load absence', { status: 500 });
@@ -52,10 +54,12 @@ export async function action({ request, params }) {
 
     const errors = validateAbsence(payload);
     if (Object.keys(errors).length) return { errors };
-
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/absences/${params.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

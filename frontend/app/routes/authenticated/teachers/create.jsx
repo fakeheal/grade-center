@@ -4,6 +4,7 @@ import { Link, redirect } from 'react-router';
 import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
 import TeacherForm from '../../../layout/forms/TeacherForm';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
+import { getJwt } from '../../../utilities/auth';
 
 export function meta() {
   return [
@@ -12,17 +13,19 @@ export function meta() {
   ];
 }
 
-export async function loader() {
-  const subjectsRes = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`);
+export async function loader({ request }) {
+  const token = getJwt(request.headers.get('cookie') ?? '');
+  const subjectsRes = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`, { headers: { Authorization: `Bearer ${token}` } });
   const subjects = await subjectsRes.json();
 
-  const schoolsRes = await fetch(`${apiConfig.baseUrl}/schools`);
+  const schoolsRes = await fetch(`${apiConfig.baseUrl}/schools`, { headers: { Authorization: `Bearer ${token}` } });
   const schools = await schoolsRes.json();
 
   return { subjects, schools: schools.content };
 }
 
-export async function clientAction({ request }) {
+export async function action({ request }) {
+  const token = getJwt(request.headers.get('cookie') ?? '');
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -53,6 +56,7 @@ export async function clientAction({ request }) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       firstName,

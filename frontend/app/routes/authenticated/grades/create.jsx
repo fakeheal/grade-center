@@ -9,12 +9,14 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import GradeForm from '../../../layout/forms/GradeForm';
 import { validateGrade } from '../../../utilities/validation'; // Assuming you'll create this validation function
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader() {
+export async function loader({ request }) {
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const [studentsRes, teachersRes, subjectsRes] = await Promise.all([
-        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/teachers?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`),
+        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/teachers?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     const studentsRaw = (await studentsRes.json()).content ?? [];
@@ -43,9 +45,12 @@ export async function action({ request }) {
     const errors = validateGrade(payload, 'CREATE');
     if (Object.keys(errors).length) return { errors };
 
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/grades`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

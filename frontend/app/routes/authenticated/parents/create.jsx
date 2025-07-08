@@ -9,11 +9,13 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import ParentForm from '../../../layout/forms/ParentForm';
 import { validateParent } from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader() {
+export async function loader({ request }) {
     // 1) get all students for this school
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const studentsRes = await fetch(
-        `${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`
+        `${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }
     );
     const studentsRaw = (await studentsRes.json()).content ?? [];
 
@@ -39,9 +41,12 @@ export async function action({ request }) {
     const errors = validateParent(payload, 'CREATE');
     if (Object.keys(errors).length) return { errors };
 
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/parents`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

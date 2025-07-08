@@ -11,16 +11,18 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import GradeForm from '../../../layout/forms/GradeForm';
 import { validateGrade } from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader({ params }) {
-    const gradeRes = await fetch(`${apiConfig.baseUrl}/grades/${params.id}`);
+export async function loader({ request, params }) {
+    const token = getJwt(request.headers.get('cookie') ?? '');
+    const gradeRes = await fetch(`${apiConfig.baseUrl}/grades/${params.id}`, { headers: { Authorization: `Bearer ${token}` } });
     if (!gradeRes.ok) throw new Response('Grade not found', { status: 404 });
     const grade = await gradeRes.json();
 
     const [studentsRes, teachersRes, subjectsRes] = await Promise.all([
-        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/teachers?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`),
+        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/teachers?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     const studentsRaw = (await studentsRes.json()).content ?? [];
@@ -48,10 +50,12 @@ export async function action({ request, params }) {
 
     const errors = validateGrade(payload, 'EDIT');
     if (Object.keys(errors).length) return { errors };
-
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/grades/${params.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

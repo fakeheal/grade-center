@@ -35,17 +35,71 @@ export default () => {
                     <li>
                       <NavLink to="/parents">Parents</NavLink>
                     </li>
+                    <li>
+                      <NavLink to="/grades">Grades</NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/absences">Absences</NavLink>
+                    </li>
 
                   </>
                 )
               }
+                {
+                    user.role === USER_ROLES.TEACHER && (
+                        <>
+
+                            <li>
+                                <NavLink to="/students">Students</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/grades">Grades</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/absences">Absences</NavLink>
+                            </li>
+
+                        </>
+                    )
+                }
+                {
+                    user.role === USER_ROLES.PARENT && (
+                        <>
+
+                            <li>
+                                <NavLink to="/students">Students</NavLink>
+                            </li>
+
+                        </>
+                    )
+                }
+                {
+                    user.role === USER_ROLES.STUDENT && (
+                        <>
+                            <li>
+                                <NavLink to="/grades">Grades</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/absences">Absences</NavLink>
+                            </li>
+                        </>
+                    )
+                }
               <li>
                 <NavLink to="/timetables">Timetable</NavLink>
               </li>
               {user.role === USER_ROLES.DIRECTOR && (
-                <li>
-                  <NavLink to="/school/edit">School</NavLink>
-                </li>
+                  <>
+                    <li>
+                      <NavLink to="/school/edit">School</NavLink>
+                    </li>
+                      <li>
+                      <NavLink to="/teachers">Teachers</NavLink>
+                      </li>
+                      <li>
+                      <NavLink to="/school-years">School Years</NavLink>
+                      </li>
+                  </>
               )}
               <li>
                 <NavLink to="/logout">Logout</NavLink>

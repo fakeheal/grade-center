@@ -1,14 +1,18 @@
 import apiConfig from '../../../api.config';
 import React from 'react';
-import { Link, redirect, Form, useNavigation } from 'react-router';
+import { Link, redirect, Form, useNavigation, useOutletContext } from 'react-router';
 import { Trash2 } from 'lucide-react';
+import { getJwt } from '../../../utilities/auth';
 
 export async function action({ request }) {
   const formData = await request.formData();
   const id = formData.get('deleteId');
 
+  const token = getJwt(request.headers.get('cookie'));
+
   const res = await fetch(`${apiConfig.baseUrl}/teachers/${id}`, {
     method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!res.ok)
@@ -25,8 +29,9 @@ export function meta() {
 }
 
 export async function loader({ request }) {
+  const token = getJwt(request.headers.get('cookie'));
   const page = (new URL(request.url)).searchParams.get('page') || 0;
-  const response = await fetch(`${apiConfig.baseUrl}/teachers`);
+  const response = await fetch(`${apiConfig.baseUrl}/teachers`, { headers: { Authorization: `Bearer ${token}` } });
   return await response.json();
 }
 
@@ -35,6 +40,9 @@ export function HydrateFallback() {
 }
 
 export default function Index({ loaderData }) {
+  const { token: ctxToken } = useOutletContext() ?? {};
+  const token = ctxToken || getJwt(document?.cookie);
+  const navigation = useNavigation();
   return (
     <div className="container mx-auto">
       <div className="py-8 breadcrumbs text-sm">
@@ -91,7 +99,7 @@ export default function Index({ loaderData }) {
                       </td>
                       <td className="flex gap-2 justify-center">
                         <Link
-                          to={`/teachers/${teacher.id}/edit`}
+                          to={`/teachers/${teacher.user.id}/edit`}
                           className="btn btn-sm btn-outline"
                           title="Edit"
                         >

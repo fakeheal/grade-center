@@ -9,12 +9,14 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import AbsenceForm from '../../../layout/forms/AbsenceForm';
 import validateAbsence from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader() {
+export async function loader({ request }) {
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const [studentsRes, classesRes, subjectsRes] = await Promise.all([
-        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}&size=1000`),
-        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`),
+        fetch(`${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/classes?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     const studentsRaw = (await studentsRes.json()).content ?? [];
@@ -46,9 +48,12 @@ export async function action({ request }) {
     console.log("Validation Errors:", errors);
     if (Object.keys(errors).length) return { errors };
 
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/absences`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

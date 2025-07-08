@@ -6,17 +6,21 @@ import {
     useLoaderData,
     useNavigation,
     useSearchParams,
+    useOutletContext,
 } from 'react-router';
 import apiConfig from '../../../api.config';
 import { Trash2, Edit, Users } from 'lucide-react';
 import { useState } from 'react';
+import { getJwt } from '../../../utilities/auth';
 
 export async function loader({ request }) {
 	const url = new URL(request.url);
 	const page = url.searchParams.get('page') || 0;
 
+	const token = getJwt(request.headers.get('cookie'));
 	const res = await fetch(
-		`${apiConfig.baseUrl}/parents?page=${page}&size=20`
+		`${apiConfig.baseUrl}/parents?page=${page}&size=20`,
+		{ headers: { Authorization: `Bearer ${token}` } }
 	);
 	if (!res.ok) throw new Response('Failed to load parents', { status: 500 });
 
@@ -27,8 +31,11 @@ export async function action({ request }) {
 	const formData = await request.formData();
 	const id = formData.get('deleteId');
 
+	const token = getJwt(request.headers.get('cookie'));
+
 	const res = await fetch(`${apiConfig.baseUrl}/parents/${id}`, {
 		method: 'DELETE',
+		headers: { Authorization: `Bearer ${token}` },
 	});
 
 	if (!res.ok)
@@ -43,6 +50,10 @@ export default function ParentsIndex() {
 	const [searchParams] = useSearchParams();
 	const page = Number(searchParams.get('page') || 0);
 
+	/* token is available from layout _or_ from cookie as fallback */
+	const { token: ctxToken } = useOutletContext() ?? {};
+	const token = ctxToken || getJwt(document?.cookie);
+
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedParentStudents, setSelectedParentStudents] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +63,8 @@ export default function ParentsIndex() {
 		setIsLoading(true);
 		try {
 			const res = await fetch(
-				`${apiConfig.baseUrl}/parents/${parentId}/students`
+				`${apiConfig.baseUrl}/parents/${parentId}/students`,
+				{ headers: { Authorization: `Bearer ${token}` } }
 			);
 			if (!res.ok) {
 				throw new Error('Failed to fetch students');
