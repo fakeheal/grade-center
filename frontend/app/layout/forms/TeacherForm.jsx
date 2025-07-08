@@ -12,7 +12,6 @@ export default function TeacherForm({ teacher, subjects, schools, errors }) {
   const [repeatPassword, setRepeatPassword] = React.useState('');
   const [subjectIds, setSubjectIds] = React.useState(teacher?.subjects?.map(subject => subject.id) || []);
   const [schoolId, setSchoolId] = React.useState(teacher?.schoolId || '');
-  const [grade, setGrade] = React.useState(teacher?.grade || '');
 
 
   return (
@@ -23,16 +22,7 @@ export default function TeacherForm({ teacher, subjects, schools, errors }) {
           errors={errors}
           setFuncs={{ setFirstName, setLastName, setEmail, setPassword, setRepeatPassword }}
         />
-        <div className="mb-2">
-          <label className="fieldset-label" htmlFor="grade">Grade</label>
-          <input type="number" className={`input w-full ${errors?.grade ? `input-error` : ``}`}
-                 placeholder="Enter grade..." name="grade"
-                 value={grade}
-                 onChange={(e) => setGrade(e.target.value)}
-                 id="grade" min="1" max="12"/>
-          {errors?.grade &&
-            <p className="text-error text-xs mt-1">{errors.grade}</p>}
-        </div>
+
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="schoolId">School</label>
           <SchoolSelect schools={schools} schoolId={schoolId} errors={errors}/>
