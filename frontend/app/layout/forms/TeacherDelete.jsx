@@ -1,11 +1,12 @@
 import React from 'react';
 import ErrorIcon from '../icons/ErrorIcon';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
 import apiConfig from '../../api.config';
 
 
 export default function TeacherDelete({ teacherId, onSuccess }) {
   const [errors, setErrors] = React.useState({});
+  const { user, token } = useOutletContext('root');
 
   const navigate = useNavigate();
   const _onDeleteButtonClicked = async (e) => {
@@ -15,6 +16,9 @@ export default function TeacherDelete({ teacherId, onSuccess }) {
     }
     const response = await fetch(`${apiConfig.baseUrl}/teachers/${teacherId}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
     });
 
     if (!response.ok) {

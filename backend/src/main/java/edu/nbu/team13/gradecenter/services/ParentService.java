@@ -3,6 +3,7 @@ package edu.nbu.team13.gradecenter.services;
 import edu.nbu.team13.gradecenter.dtos.ParentDto;
 import edu.nbu.team13.gradecenter.dtos.ParentResponseDto;
 import edu.nbu.team13.gradecenter.entities.ParentStudent;
+import edu.nbu.team13.gradecenter.entities.Student;
 import edu.nbu.team13.gradecenter.entities.User;
 import edu.nbu.team13.gradecenter.entities.enums.UserRole;
 import edu.nbu.team13.gradecenter.exceptions.InvalidUserRole;
@@ -24,6 +25,7 @@ public class ParentService {
     private final ParentRepository parentRepository;
     private final ParentStudentRepository parentStudentRepository;
     private final UserService userService;
+    private final StudentService studentService;
 
     /**
      * Creates a new parent user and links it to the specified students.
@@ -69,10 +71,7 @@ public class ParentService {
         parentStudentRepository.deleteAllByParentId(id);
 
         if (dto.getStudentIds() != null) {
-            List<Long> filteredStudentIds = dto.getStudentIds().stream()
-                .filter(studentId -> !studentId.equals(id))
-                .collect(Collectors.toList());
-            saveLinks(user, filteredStudentIds);
+            saveLinks(user, dto.getStudentIds());
         }
 
         return user;
@@ -100,14 +99,11 @@ public class ParentService {
         List<Long> distinctStudentIds = studentIds.stream().distinct().collect(Collectors.toList());
 
         for (Long sid : distinctStudentIds) {
-            User student = userService.findById(sid);
-            if (!student.getRole().equals(UserRole.STUDENT)) {
-                throw new InvalidUserRole(sid, UserRole.STUDENT.name());
-            }
+            Student student = studentService.findById(sid);
 
             ParentStudent parentStudent = new ParentStudent();
             parentStudent.setParent(parent);
-            parentStudent.setStudent(student);
+            parentStudent.setStudent(student.getUser());
             parentStudentRepository.save(parentStudent);
         }
     }

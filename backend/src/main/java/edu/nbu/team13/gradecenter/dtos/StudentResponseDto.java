@@ -12,6 +12,7 @@ public class StudentResponseDto {
     private Long classId;
     private String firstName;
     private String lastName;
+    private String email;
     private Long userId;
 
     public StudentResponseDto(Student student) {
@@ -21,6 +22,7 @@ public class StudentResponseDto {
         if (student.getUser() != null) {
             this.firstName = student.getUser().getFirstName();
             this.lastName = student.getUser().getLastName();
+            this.email     = student.getUser().getEmail();
             this.userId = student.getUser().getId();
         }
     }

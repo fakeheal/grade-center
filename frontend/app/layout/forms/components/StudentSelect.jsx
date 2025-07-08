@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-/**
- * Dropdown multi-select for linking students to a parent.
- *
- * Props
- * ─────
- * students            array   → [{ id, firstName?, lastName?, userId, user?, grade? }]
- * selectedIds         array   → IDs that should be checked
- * onSelectionChange   function→ Callback when selection changes
- * errors              object  → field-level errors from the action (optional)
- */
 export default function StudentSelect({
                                           students = [],
                                           selectedIds = [],
@@ -87,9 +77,9 @@ export default function StudentSelect({
                                 <input
                                     type="checkbox"
                                     className="checkbox checkbox-sm checkbox-primary"
-                                    checked={selectedIds.includes(s.userId)}
-                                    onChange={() => handleCheckboxChange(s.userId)}
-                                    disabled={!s.userId}
+                                    checked={selectedIds.includes(s.id)}
+                                     onChange={() => handleCheckboxChange(s.id)}
+                                     disabled={!s.id}
                                 />
                                 <span className="flex-1 text-left">
                                     {displayName}

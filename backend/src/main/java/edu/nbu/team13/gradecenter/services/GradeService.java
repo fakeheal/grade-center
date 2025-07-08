@@ -1,68 +1,108 @@
 package edu.nbu.team13.gradecenter.services;
 
-import edu.nbu.team13.gradecenter.dtos.ClassDto;
 import edu.nbu.team13.gradecenter.dtos.GradeDto;
-import edu.nbu.team13.gradecenter.entities.Class;
+import edu.nbu.team13.gradecenter.dtos.GradeResponseDto;
 import edu.nbu.team13.gradecenter.entities.Grade;
-import edu.nbu.team13.gradecenter.entities.School;
-import edu.nbu.team13.gradecenter.repositories.ClassRepository;
+import edu.nbu.team13.gradecenter.entities.Student;
+import edu.nbu.team13.gradecenter.entities.Subject;
+import edu.nbu.team13.gradecenter.entities.Teacher;
 import edu.nbu.team13.gradecenter.repositories.GradeRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import edu.nbu.team13.gradecenter.repositories.StudentRepository;
+import edu.nbu.team13.gradecenter.repositories.SubjectRepository;
+import edu.nbu.team13.gradecenter.repositories.TeacherRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GradeService {
     private final GradeRepository gradeRepository;
+    private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
+    private final SubjectRepository subjectRepository;
 
-    public GradeService(GradeRepository gradeRepository) {
+    public GradeService(GradeRepository gradeRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, SubjectRepository subjectRepository) {
         this.gradeRepository = gradeRepository;
+        this.studentRepository = studentRepository;
+        this.teacherRepository = teacherRepository;
+        this.subjectRepository = subjectRepository;
     }
 
-    public Grade create(GradeDto gradeDto) {
-        Grade grd = new Grade();
-        grd.setDate(gradeDto.getDate());
-        grd.setStudentId(gradeDto.getStudentId());
-        grd.setSchoolYearId(gradeDto.getSchoolYearId());
-        grd.setSubjectId(gradeDto.getSubjectId());
-        grd.setTeacherId(gradeDto.getTeacherId());
-        grd.setValue(gradeDto.getValue());
-
-        // Save the Class entity to the database
-        return gradeRepository.save(grd);
-    }
-    public Grade update(Long id, GradeDto gradeDto) {
-        // Find the existing Class by ID
-        Grade existingGrade = gradeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Grade not found"));
-
-        // Update the Class's properties
-        existingGrade.setDate(gradeDto.getDate());
-        existingGrade.setStudentId(gradeDto.getStudentId());
-        existingGrade.setSchoolYearId(gradeDto.getSchoolYearId());
-        existingGrade.setSubjectId(gradeDto.getSubjectId());
-        existingGrade.setTeacherId(gradeDto.getTeacherId());
-        existingGrade.setValue(gradeDto.getValue());
-
-        // Save the updated Class entity to the database
-        return gradeRepository.save(existingGrade);
-    }
-    public void delete(Long id) {
-        // Find the existing school by ID
-        Grade grade = gradeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Grade not found"));
-
-        // Delete the school entity from the database
-        gradeRepository.delete(grade);
-    }
     public Grade findById(Long id) {
-        // Find the existing school by ID
         return gradeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Grade not found"));
     }
-    public Page<Grade> search(Long studentId, Long teacherId, Long subjectId, Long schoolYearId, Double value, LocalDate date, Pageable pageable) {
-        return gradeRepository.findByOptionalFilters(studentId, teacherId, subjectId, schoolYearId, value, date, pageable);
+
+    @Transactional
+    public Grade create(GradeDto gradeDto) {
+        Grade grade = new Grade();
+        grade.setStudentId(gradeDto.getStudentId());
+        grade.setTeacherId(gradeDto.getTeacherId());
+        grade.setSubjectId(gradeDto.getSubjectId());
+        grade.setValue(gradeDto.getValue());
+        grade.setDate(gradeDto.getDate());
+        grade.setSchoolYearId(gradeDto.getSchoolYearId());
+        return gradeRepository.save(grade);
+    }
+
+    @Transactional
+    public Grade update(Long id, GradeDto gradeDto) {
+        Grade existingGrade = gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+
+        existingGrade.setStudentId(gradeDto.getStudentId());
+        existingGrade.setTeacherId(gradeDto.getTeacherId());
+        existingGrade.setSubjectId(gradeDto.getSubjectId());
+        existingGrade.setValue(gradeDto.getValue());
+        existingGrade.setDate(gradeDto.getDate());
+        existingGrade.setSchoolYearId(gradeDto.getSchoolYearId());
+
+        return gradeRepository.save(existingGrade);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Grade existingGrade = gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+        gradeRepository.delete(existingGrade);
+    }
+
+    public List<GradeResponseDto> findAll() {
+        return gradeRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<GradeResponseDto> findByStudentId(Long studentId) {
+        return gradeRepository.findByStudentId(studentId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private GradeResponseDto convertToDto(Grade grade) {
+        GradeResponseDto dto = new GradeResponseDto(grade);
+
+        studentRepository.findById(grade.getStudentId()).ifPresent(s -> {
+            GradeResponseDto.StudentResponseDto studentDto = new GradeResponseDto.StudentResponseDto(s.getId());
+            studentDto.setFirstName(s.getUser().getFirstName());
+            studentDto.setLastName(s.getUser().getLastName());
+            dto.setStudent(studentDto);
+        });
+
+        teacherRepository.findById(grade.getTeacherId()).ifPresent(t -> {
+            GradeResponseDto.TeacherResponseDto teacherDto = new GradeResponseDto.TeacherResponseDto(t.getId());
+            teacherDto.setFirstName(t.getUser().getFirstName());
+            teacherDto.setLastName(t.getUser().getLastName());
+            dto.setTeacher(teacherDto);
+        });
+
+        subjectRepository.findById(grade.getSubjectId()).ifPresent(sub -> {
+            GradeResponseDto.SubjectResponseDto subjectDto = new GradeResponseDto.SubjectResponseDto(sub.getId());
+            subjectDto.setName(sub.getName());
+            dto.setSubject(subjectDto);
+        });
+        return dto;
     }
 }

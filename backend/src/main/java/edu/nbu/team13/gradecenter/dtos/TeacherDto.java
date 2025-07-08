@@ -13,6 +13,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class TeacherDto extends UserDto {
     private Long userId;
+    private Long grade;
 
     private Set<Subject> subjects = new HashSet<>();
 }

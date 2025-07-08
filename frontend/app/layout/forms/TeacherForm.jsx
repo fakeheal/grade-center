@@ -1,36 +1,57 @@
 import { Form } from 'react-router';
 import React from 'react';
-import UserFields from './components/UserFields.jsx';
-import SubjectSelect from './components/SubjectSelect.jsx';
+import UserFields from "./components/UserFields.jsx";
+import SchoolSelect from "./components/SchoolSelect.jsx";
+import SubjectSelect from "./components/SubjectSelect.jsx";
 
-export default function TeacherForm({ teacher, subjects, errors }) {
+
+export default function TeacherForm({ teacher, subjects, schools, errors }) {
+
   const [firstName, setFirstName] = React.useState(teacher?.firstName || '');
   const [lastName, setLastName] = React.useState(teacher?.lastName || '');
   const [email, setEmail] = React.useState(teacher?.email || '');
   const [password, setPassword] = React.useState('');
   const [repeatPassword, setRepeatPassword] = React.useState('');
   const [subjectIds, setSubjectIds] = React.useState(teacher?.subjects?.map(subject => subject.id) || []);
-
+  const [schoolId, setSchoolId] = React.useState(teacher?.schoolId || '');
+  const [grade, setGrade] = React.useState(teacher?.grade || '');
 
   return (
     <Form method="post">
       <fieldset className="fieldset">
+        <input type="hidden" name="token" value={token}/>
+        <input type="hidden" name="schoolId" value={schoolId}/>
         <UserFields
+          values={{ firstName, lastName, email, password, repeatPassword }}
           errors={errors}
           setFuncs={{ setFirstName, setLastName, setEmail, setPassword, setRepeatPassword }}
-          firstName={firstName}
-          lastName={lastName}
-          email={email}
-          password={password}
-          repeatPassword={repeatPassword}
         />
+        <div className="mb-2">
+          <label className="fieldset-label" htmlFor="grade">Grade</label>
+          <input type="number" className={`input w-full ${errors?.grade ? `input-error` : ``}`}
+                 placeholder="Enter grade..." name="grade"
+                 value={grade}
+                 onChange={(e) => setGrade(e.target.value)}
+                 id="grade" min="1" max="12"/>
+          {errors?.grade &&
+            <p className="text-error text-xs mt-1">{errors.grade}</p>}
+        </div>
+        <div className="mb-2">
+          <label className="fieldset-label" htmlFor="schoolId">School</label>
+          <SchoolSelect schools={schools} schoolId={schoolId} errors={errors}/>
+          {errors?.schoolId &&
+            <p className="text-error text-xs mt-1">{errors.schoolId}</p>}
+        </div>
         <div className="mb-2">
           <label className="fieldset-label" htmlFor="subjects">Subjects</label>
           <SubjectSelect
-            multiselect
+
             subjects={subjects}
             errors={errors}
-            selectedIds={teacher?.subjects?.map(s => s.id)}
+            selectedIds={subjectIds}
+            onSelectionChange={setSubjectIds}
+            singleSelect={false}
+
           />
           {errors?.subjects &&
             <p className="text-error text-xs mt-1">{errors.subjects}</p>}

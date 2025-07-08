@@ -1,6 +1,8 @@
 import React from "react";
 
-export default function UserFields({firstName,lastName,email,password,repeatPassword,setFuncs, errors }) {
+export default function UserFields({ values, setFuncs, errors, isEdit = false }) {
+    const { firstName, lastName, email, password, repeatPassword } = values;
+
     const {setFirstName,setLastName,setEmail,setPassword,setRepeatPassword} = setFuncs;
     return (
         <div>

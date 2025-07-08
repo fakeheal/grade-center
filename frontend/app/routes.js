@@ -3,11 +3,15 @@ import { index, prefix, route } from '@react-router/dev/routes';
 export default [
   index('routes/home.jsx'),
   route('login', 'routes/login.jsx'),
-  route('signup', 'routes/signup.jsx'),
+  route('logout', 'routes/authenticated/logout.jsx'),
 
   route('dashboard', 'routes/authenticated/dashboard.jsx'),
   route('school/edit', 'routes/authenticated/school/edit.jsx'),
-  route('students', 'routes/authenticated/students/index.jsx'),
+  ...prefix('students', [
+    index('routes/authenticated/students/index.jsx'),
+    route('create', 'routes/authenticated/students/create.jsx'),
+    route(':id/edit', 'routes/authenticated/students/edit.jsx'),
+  ]),
 
   /**
    * Teachers routes
@@ -16,6 +20,11 @@ export default [
     index('routes/authenticated/teachers/index.jsx'),
     route('create', 'routes/authenticated/teachers/create.jsx'),
     route(':id/edit', 'routes/authenticated/teachers/edit.jsx'),
+  ]),
+
+  ...prefix('school-years', [
+    index('routes/authenticated/school-years/index.jsx'),
+    route('create', 'routes/authenticated/school-years/create.jsx'),
   ]),
 
   /**
@@ -39,5 +48,16 @@ export default [
   ]),
   ...prefix('subjects', [
     route(':id/edit', 'routes/authenticated/subjects/edit.jsx'),
+  ]),
+  ...prefix('grades', [
+    index('routes/authenticated/grades/index.jsx'),
+    route('create', 'routes/authenticated/grades/create.jsx'),
+    route(':id/edit', 'routes/authenticated/grades/edit.jsx'),
+  ]),
+  ...prefix('absences', [
+    index('routes/authenticated/absences/index.jsx'),
+    route('create', 'routes/authenticated/absences/create.jsx'),
+    route(':id/edit', 'routes/authenticated/absences/edit.jsx'),
+    
   ]),
 ];

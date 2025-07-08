@@ -10,16 +10,18 @@ import apiConfig from '../../../api.config';
 import settings from '../../../settings';
 import ParentForm from '../../../layout/forms/ParentForm';
 import { validateParent } from '../../../utilities/validation';
+import { getJwt } from '../../../utilities/auth';
 
-export async function loader({ params }) {
+export async function loader({ request, params }) {
     // fetch parent
-    const parentRes = await fetch(`${apiConfig.baseUrl}/parents/${params.id}`);
+    const token = getJwt(request.headers.get('cookie') ?? '');
+    const parentRes = await fetch(`${apiConfig.baseUrl}/parents/${params.id}`, { headers: { Authorization: `Bearer ${token}` } });
     if (!parentRes.ok) throw new Response('Parent not found', { status: 404 });
     const parent = await parentRes.json();
 
     // fetch students
     const studentsRes = await fetch(
-        `${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`
+        `${apiConfig.baseUrl}/students?schoolId=${settings.schoolId}&size=1000`, { headers: { Authorization: `Bearer ${token}` } }
     );
     const studentsRaw = (await studentsRes.json()).content ?? [];
 
@@ -49,9 +51,12 @@ export async function action({ request, params }) {
     const errors = validateParent(payload, 'EDIT');
     if (Object.keys(errors).length) return { errors };
 
+    const token = getJwt(request.headers.get('cookie') ?? '');
     const res = await fetch(`${apiConfig.baseUrl}/parents/${params.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
     });
 

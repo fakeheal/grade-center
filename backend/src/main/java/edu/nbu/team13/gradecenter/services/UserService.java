@@ -8,17 +8,27 @@ import edu.nbu.team13.gradecenter.exceptions.UserNotFound;
 import edu.nbu.team13.gradecenter.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     private final SchoolService schoolService;
 
-    public UserService(UserRepository userRepository, SchoolService schoolService) {
+    public UserService(UserRepository userRepository, SchoolService schoolService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.schoolService = schoolService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -61,8 +71,7 @@ public class UserService {
         user.setSchool(this.schoolService.findById(userDto.getSchoolId()));
         user.setRole(role);
 
-        // @TODO: Hash the password before saving, e.g., using BCrypt
-        user.setPassword(userDto.getPassword());
+        user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
 
         return userRepository.save(user);
     }
@@ -88,8 +97,7 @@ public class UserService {
         user.setSchool(this.schoolService.findById(userDto.getSchoolId()));
 
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-            // @TODO: Hash the password before saving, e.g., using BCrypt
-            user.setPassword(userDto.getPassword());
+            user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
         }
 
         return userRepository.save(user);
@@ -105,4 +113,19 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = findByEmail(email);
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFound(0L));
+    }
 }
