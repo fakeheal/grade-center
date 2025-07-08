@@ -1,10 +1,11 @@
 import apiConfig from '../../../api.config';
-import settings from '../../../settings';
-import { Link, redirect } from 'react-router';
+import { Link, redirect, useNavigate, useOutletContext } from 'react-router';
 import { TEACHER_MODE, validateTeacher } from '../../../utilities/validation';
 import TeacherForm from '../../../layout/forms/TeacherForm';
 import ErrorIcon from '../../../layout/icons/ErrorIcon';
+
 import { getJwt } from '../../../utilities/auth';
+
 
 export function meta() {
   return [
@@ -14,6 +15,7 @@ export function meta() {
 }
 
 export async function loader({ request }) {
+
   const token = getJwt(request.headers.get('cookie') ?? '');
   const subjectsRes = await fetch(`${apiConfig.baseUrl}/subjects?schoolId=${settings.schoolId}`, { headers: { Authorization: `Bearer ${token}` } });
   const subjects = await subjectsRes.json();
@@ -26,6 +28,7 @@ export async function loader({ request }) {
 
 export async function action({ request }) {
   const token = getJwt(request.headers.get('cookie') ?? '');
+
   const formData = await request.formData();
   const firstName = formData.get('firstName');
   const lastName = formData.get('lastName');
@@ -33,8 +36,10 @@ export async function action({ request }) {
   const password = formData.get('password');
   const repeatPassword = formData.get('repeatPassword');
   const subjectIds = formData.getAll('subjectIds');
+
   const schoolId = formData.get('schoolId');
   const grade = formData.get('grade');
+
 
   const errors = validateTeacher(
     firstName,
@@ -79,8 +84,11 @@ export async function action({ request }) {
 }
 
 export default function Create({ loaderData, actionData }) {
+  const { user, token } = useOutletContext();
   const { errors } = actionData || {};
+
   const { subjects, schools } = loaderData || {};
+
   return (
     <div className="bg-base-100 text-base-content py-10 lg:py-20">
       <div className="card mx-auto bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -95,7 +103,9 @@ export default function Create({ loaderData, actionData }) {
               <span>{errors.general}</span>
             </div>
           )}
+
           <TeacherForm teacher={null} errors={errors} subjects={subjects} schools={schools}/>
+
         </div>
       </div>
     </div>
